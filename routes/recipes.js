@@ -66,6 +66,6 @@ router.patch('/:id', async (req, res) => {
         - can only be accessed by author of 
     * GET Recipe object
     * GET Recipe comments
-    * GET Recipe abstractions to post on feed
+    * GET Recipe abstractions to post on feed--> title and photo.
 
 */

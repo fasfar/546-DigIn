@@ -23,7 +23,7 @@ const {ObjectId} = require('mongodb');
 //const { recipes } = require("../config/mongoCollections");
 module.exports = {
     //get all recipes
-    async addRecipe(title, author, ingredients, instructions, tags, pictures="empty"){
+    async addRecipe(title, author, ingredients, instructions, tags){ //leaving picture out for now
         var insert_likes = [];
         var insert_total_likes = 0
         if(!title){
@@ -39,7 +39,7 @@ module.exports = {
         if(typeof author != 'string'){
             throw 'Please provide a proper author(string)'
         }
-        if(!ingredients){
+        if(!ingredients){                           //ingredients might have to be a subdocument because we need to separate quantity and ingredient for lookup
             throw 'Please provide ingredients.'
         }
         if(!tags){
@@ -77,7 +77,7 @@ module.exports = {
             total_likes: 0,
             tags: tags, 
             comments: "",
-            pictures: pictures
+            pictures: null
         }
         const insertRecipe = await recipeCollection.insertOne(newRecipe)
         if(insertRecipe.insertCount === 0){
@@ -157,7 +157,7 @@ module.exports = {
    },
 
    async getRecipeByIngredients(ingredients){
-       if(!ingredient){
+       if(!ingredients){
            throw 'No ingredient given'
        }
        if(!Array.isArray(ingredients)){

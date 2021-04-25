@@ -133,6 +133,7 @@ let exportedMethods = {
 
 
     //maybe add functions to add/remove from the array variables of users (users_following, tags_following, recipes_saved)
+    //alter methods to include new user data -> followers, num followers, and own recipes
 };
 
 module.exports = exportedMethods;

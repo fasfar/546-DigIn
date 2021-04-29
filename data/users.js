@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const uuid = require('uuid/v4');
+const saltRounds = 16;
 
 let exportedMethods = {
     async getUser(id){

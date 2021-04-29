@@ -23,9 +23,7 @@ const {ObjectId} = require('mongodb');
 //const { recipes } = require("../config/mongoCollections");
 module.exports = {
     //get all recipes
-    async addRecipe(title, author, ingredients, instructions, tags){ //leaving picture out for now
-        var insert_likes = [];
-        var insert_total_likes = 0
+    async addRecipe(title, author, ingredients, instructions, tags, picture){ //leaving picture out for now
         if(!title){
             throw 'Please provide a recipe title'
         }
@@ -64,21 +62,25 @@ module.exports = {
         if(typeof instructions != 'string'){
             throw 'Please provide instructions using words(strings)'
         }
-        // if(!pictures){
-        //     throw 'You must provide a photo'
-        // }
+        if(!pictures){
+            throw 'You must provide a photo'
+        }
+        if(typeof pictures != 'string'){
+            throw 'Please provide a file path to your photo'
+        }
         const recipeCollection = await recipes()
         let newRecipe = {
             title: title, 
             author: author, 
-            ingredients: ingredients, 
+            ingredients: ingredients, // list of objects
             instructions: instructions,
-            likes: 0,
+            likes: [],
             total_likes: 0,
             tags: tags, 
             comments: "",
-            pictures: null
+            pictures: picture
         }
+        
         const insertRecipe = await recipeCollection.insertOne(newRecipe)
         if(insertRecipe.insertCount === 0){
             throw 'Could not add recipe'
@@ -92,6 +94,20 @@ module.exports = {
         const recipeCollection = await recipes()
         const recipeList = await recipeCollection.find({}).toArray()
         return recipeList
+    },
+    async addCommentToRecipe(recipeId, commentId){
+        let currentRecipe = this.getRecipeById(recipeId)
+
+        const recipeCollection = await recipes()
+        const updateInfo = await recipeCollection.updateOne(
+            {_id: recipeId}, 
+            {$addtoSet: {comments: {id: commentId}}}
+        )
+        if(!updateInfo.matchedCount && !updateInfo.modifiedCount){
+            throw 'Update failed'
+        }
+        return await this.getRecipeById(recipeId)
+
     },
     //gets a recipe by id
    async getRecipeById(id){
@@ -200,7 +216,30 @@ module.exports = {
        });
 
    },
-   //update ingredients--> this only adds one ingredient to the array and checks for duplicates
+
+   async updatedAuthor(id, updatedAuthor){
+    if(!id){
+        throw 'You must provide an id'
+    }
+    let obj = ObjectId(id)
+    var objId = require('mongodb').ObjectID
+    if(!objId.isValid(obj)){
+        throw ` ${objId} is not a proper mongo id`
+    }
+    if(!updatedAuthor){
+        throw 'You must provide a name'
+    }
+    if(typeof updatedAuthor != 'string'){
+        throw 'Author must be a string'
+    }
+    const recipeCollection = recipes()
+    return await recipeCollection
+    .updateOne({_id: id}, {$set: {author : updatedAuthor}})
+    .then(async function(){
+        return await module.exports.getRecipeById(id)
+    });
+   },
+   //update ingredients
    async updatedIngredients(id, updatedIngredients){
     if(!id){
         throw 'You must provide an id'
@@ -225,7 +264,7 @@ module.exports = {
     }
     const recipeCollection = await recipes()
     return await recipeCollection
-    .updateOne({ _id: id }, { $addToSet: { ingredient: updatedIngredients } })
+    .updateOne({ _id: id }, { $push: { ingredient: {$each: updatedIngredients} } })     //adds each element of the updatedIngredients to the existing array
       .then(async function () {
         return await module.exports.getRecipeById(id);
       })
@@ -254,6 +293,50 @@ module.exports = {
        .then(async function(){
            return await module.exports.getRecipeById(id)
        })  
+   },
+   async updatePicture(id, updatedPicture){
+    if(!id){
+        throw 'You must provide an id'
+    }
+    if (!id.trim()){
+     throw 'Id is an empty string';
+ } 
+    let obj = ObjectId(id)
+    var objId = require('mongodb').ObjectID
+    if(!objId.isValid(obj)){
+        throw ` ${objId} is not a proper mongo id`
+    }
+    if(!updatedPicture){
+        throw 'Provide a picture file path'
+    }
+    if(typeof updatedPicture !='string'){
+        throw 'picture is not a file path'
+    }
+    const recipeCollection = await recipes()
+    return await recipeCollection
+    .updateOne({_id: id}, {$set: { picture: updatedPicture}})
+    .then(async function(){
+        return await module.exports.getRecipeById(id)
+    })  
+
+   },
+
+   async updateAll(id, updatedTitle=recipe.title, updatedAuthor=recipe.author, updatedIngredients=recipe.ingredients, updatedInstructions=recipe.instructions,updatedPicture=recipe.picture){
+    if(updatedTitle != recipe.title){
+        updatedTitle(id, updatedTitle)
+    }
+    if(updatedAuthor != recipe.author){
+        updatedAuthor(id, updatedAuthor)
+    }
+    if(updatedIngredients != recipe.ingredients){
+        updatedIngredients(id, updatedIngredients)
+    }
+    if(updatedInstructions!= recipe.instructions){
+        updatedInstructions(id, updatedInstructions)
+    }
+    if(updatedPictures != recipe.updatedPictures){
+        updatedPicture(id, updatedPicture)
+    }
    },
 
    async removeRecipe(id){
@@ -293,3 +376,4 @@ module.exports = {
 }
 
 
+//make an updateAll and call the existing methods inside.

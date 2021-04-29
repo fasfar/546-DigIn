@@ -13,6 +13,14 @@ let exportedMethods = {
         return user;
     },
 
+    async getUserByUsername(username){
+        if(!username || typeof(username) != 'string') throw 'You need to input a valid username';
+        const userCollection = await users();
+        const user = await userCollection.findOne({ username: username });
+        if (!user) throw 'User not found';
+        return user;
+    },
+
     async addFollower(id1, id2){
         //id1 is followed by id2
         const user = this.getUser(id1);

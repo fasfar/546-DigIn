@@ -321,7 +321,7 @@ module.exports = {
 
    },
 
-   async updateAll(id, updatedTitle, updatedAuthor, updatedIngredients, updatedInstructions, updatedPicture){
+   async updateRecipe(id, updatedTitle, updatedAuthor, updatedIngredients, updatedInstructions, updatedPicture){
     let recipe = this.getRecipeById(id);   
     if(updatedTitle && updatedTitle != recipe.title){
         updatedTitle(id, updatedTitle)

@@ -321,20 +321,21 @@ module.exports = {
 
    },
 
-   async updateAll(id, updatedTitle=recipe.title, updatedAuthor=recipe.author, updatedIngredients=recipe.ingredients, updatedInstructions=recipe.instructions,updatedPicture=recipe.picture){
-    if(updatedTitle != recipe.title){
+   async updateAll(id, updatedTitle, updatedAuthor, updatedIngredients, updatedInstructions, updatedPicture){
+    let recipe = this.getRecipeById(id);   
+    if(updatedTitle && updatedTitle != recipe.title){
         updatedTitle(id, updatedTitle)
     }
-    if(updatedAuthor != recipe.author){
+    if(updatedAuthor && updatedAuthor != recipe.author){
         updatedAuthor(id, updatedAuthor)
     }
-    if(updatedIngredients != recipe.ingredients){
+    if(updatedIngredients && updatedIngredients != recipe.ingredients){
         updatedIngredients(id, updatedIngredients)
     }
-    if(updatedInstructions!= recipe.instructions){
+    if(updatedInstructions && updatedInstructions!= recipe.instructions){
         updatedInstructions(id, updatedInstructions)
     }
-    if(updatedPictures != recipe.updatedPictures){
+    if(updatedPictures && updatedPictures != recipe.updatedPictures){
         updatedPicture(id, updatedPicture)
     }
    },

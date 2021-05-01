@@ -1,7 +1,7 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
-const uuid = require('uuid/v4');
+//const uuid = require('uuid/v4');
 const saltRounds = 16;
 
 let exportedMethods = {
@@ -31,7 +31,7 @@ let exportedMethods = {
             followers.push(id2);
             let obj = {
                 followers: followers,
-                num_followers = user.num_followers+1
+                num_followers: user.num_followers + 1
             };
             return updateUser(id1, obj);
         }
@@ -49,7 +49,7 @@ let exportedMethods = {
             });
             let obj = {
                 followers: followers,
-                num_followers = user.num_followers-1
+                num_followers: user.num_followers - 1
             };
             return updateUser(id1, obj);
         }
@@ -65,7 +65,7 @@ let exportedMethods = {
             users_following.push(id2);
             let obj = {
                 users_following: users_following,
-                num_following = user.num_following+1
+                num_following: user.num_following+1
             };
             return updateUser(id1, obj);
         }
@@ -83,7 +83,7 @@ let exportedMethods = {
             });
             let obj = {
                 users_following: users_following,
-                num_following = user.num_following-1
+                num_following: user.num_following-1
             };
             return updateUser(id1, obj);
         }
@@ -97,7 +97,7 @@ let exportedMethods = {
         }else{
             tags.push(tag);
             let obj = {
-                tags_following = tags
+                tags_following: tags
             }
             return updatedUser(id, obj);
         }
@@ -113,7 +113,7 @@ let exportedMethods = {
                 return value != tag;
             });
             let obj = {
-                tags_following = tags
+                tags_following: tags
             }
             return updatedUser(id, obj);
         }
@@ -128,7 +128,7 @@ let exportedMethods = {
         }else{
             recipes.push(recipeId);
             let obj = {
-                recipes_saved = recipes
+                recipes_saved: recipes
             };
             return this.updateUser(id, obj);
         }
@@ -145,7 +145,7 @@ let exportedMethods = {
                 return value != recipeId;
             });
             let obj = {
-                recipes_saved = recipes
+                recipes_saved: recipes
             };
             return this.updateUser(id, obj);
         }
@@ -160,7 +160,7 @@ let exportedMethods = {
         }else{
             recipes.push(recipeId);
             let obj = {
-                own_recipes = recipes
+                own_recipes: recipes
             };
             return this.updateUser(id, obj);
         }
@@ -177,7 +177,7 @@ let exportedMethods = {
                 return value != recipeId;
             });
             let obj = {
-                own_recipes = recipes
+                own_recipes: recipes
             };
             return this.updateUser(id, obj);
         }

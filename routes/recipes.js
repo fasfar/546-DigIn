@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
+const userData = data.users
 const recipeData = data.recipes;
 
 router.get('/:id', async (req, res) => {
@@ -53,7 +54,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 
-
+module.exports = router;
 
 /*
 *TODO: Implement Recipes route functions. These functions will dictate how are data functions are accessed.*

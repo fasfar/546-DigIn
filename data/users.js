@@ -1,27 +1,28 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const { ObjectId } = require('bson');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
-const uuid = require('uuid/v4');
+//const uuid = require('uuid/v4');
 const saltRounds = 16;
 
-let exportedMethods = {
-    async getUser(id){
-        if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
+const getUser = async function getUser(id){
+        console.log(id);
+        //if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
         const userCollection = await users();
         const user = await userCollection.findOne({ _id: id });
         if (!user) throw 'User not found';
         return user;
-    },
+    };
 
-    async getUserByUsername(username){
+const getUserByUsername = async function getUserByUsername(username){
         if(!username || typeof(username) != 'string') throw 'You need to input a valid username';
         const userCollection = await users();
         const user = await userCollection.findOne({ username: username });
         if (!user) throw 'User not found';
         return user;
-    },
+    };
 
-    async addFollower(id1, id2){
+const addFollower = async function addFollower(id1, id2){
         //id1 is followed by id2
         const user = this.getUser(id1);
         let followers = user.followers;
@@ -31,13 +32,13 @@ let exportedMethods = {
             followers.push(id2);
             let obj = {
                 followers: followers,
-                num_followers = user.num_followers+1
+                num_followers: user.num_followers + 1
             };
             return updateUser(id1, obj);
         }
-    },
+    };
 
-    async removeFollower(id1, id2){
+const removeFollower = async function removeFollower(id1, id2){
         //id1 is unfollowed by id2
         const user = this.getUser(id1);
         let followers = user.followers;
@@ -49,13 +50,13 @@ let exportedMethods = {
             });
             let obj = {
                 followers: followers,
-                num_followers = user.num_followers-1
+                num_followers: user.num_followers - 1
             };
             return updateUser(id1, obj);
         }
-    },
+    };
 
-    async follow(id1, id2){
+const follow = async function follow(id1, id2){
         //id1 follows id2
         const user = this.getUser(id1);
         let users_following = user.users_following;
@@ -65,13 +66,13 @@ let exportedMethods = {
             users_following.push(id2);
             let obj = {
                 users_following: users_following,
-                num_following = user.num_following+1
+                num_following: user.num_following+1
             };
             return updateUser(id1, obj);
         }
-    },
+    };
 
-    async unFollow(id1, id2){
+const unFollow = async function unFollow(id1, id2){
         //id1 unfollows id2
         const user = this.getUser(id1);
         let users_following = user.users_following;
@@ -83,13 +84,13 @@ let exportedMethods = {
             });
             let obj = {
                 users_following: users_following,
-                num_following = user.num_following-1
+                num_following: user.num_following-1
             };
             return updateUser(id1, obj);
         }
-    },
+    };
 
-    async addTag(id, tag){
+const addTag = async function addTag(id, tag){
         const user = this.getUser(id);
         let tags = user.tags_following;
         if(tags.includes(tag)){
@@ -97,13 +98,13 @@ let exportedMethods = {
         }else{
             tags.push(tag);
             let obj = {
-                tags_following = tags
+                tags_following: tags
             }
             return updatedUser(id, obj);
         }
-    },
+    };
 
-    async removeTag(id, tag){
+const removeTag = async function removeTag(id, tag){
         const user = this.getUser(id);
         let tags = user.tags_following;
         if(!tags.includes(tag)){
@@ -113,13 +114,13 @@ let exportedMethods = {
                 return value != tag;
             });
             let obj = {
-                tags_following = tags
+                tags_following: tags
             }
             return updatedUser(id, obj);
         }
-    },
+    };
 
-    async saveRecipe(id, recipeId){
+const saveRecipe = async function saveRecipe(id, recipeId){
         //new saved recipe
         const user = this.getUser(id);
         let recipes = user.recipes_saved;
@@ -128,13 +129,13 @@ let exportedMethods = {
         }else{
             recipes.push(recipeId);
             let obj = {
-                recipes_saved = recipes
+                recipes_saved: recipes
             };
             return this.updateUser(id, obj);
         }
-    },
+    };
 
-    async removeRecipe(id, recipeId){
+const removeRecipe = async function removeRecipe(id, recipeId){
         //remove from saved recipes
         const user = this.getUser(id);
         let recipes = user.recipes_saved;
@@ -145,13 +146,13 @@ let exportedMethods = {
                 return value != recipeId;
             });
             let obj = {
-                recipes_saved = recipes
+                recipes_saved: recipes
             };
             return this.updateUser(id, obj);
         }
-    },
+    };
 
-    async addRecipe(id, recipeId){
+const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
         const user = this.getUser(id);
         let recipes = user.own_recipes;
@@ -160,13 +161,13 @@ let exportedMethods = {
         }else{
             recipes.push(recipeId);
             let obj = {
-                own_recipes = recipes
+                own_recipes: recipes
             };
             return this.updateUser(id, obj);
         }
-    },
+    };
 
-    async deleteRecipe(id, recipeId){
+const deleteRecipe = async function deleteRecipe(id, recipeId){
         //remove from own recipes
         const user = this.getUser(id);
         let recipes = user.own_recipes;
@@ -177,13 +178,13 @@ let exportedMethods = {
                 return value != recipeId;
             });
             let obj = {
-                own_recipes = recipes
+                own_recipes: recipes
             };
             return this.updateUser(id, obj);
         }
-    },
+}
 
-    async updateUser(id, newUser){
+const updateUser = async function updateUser(id, newUser){
         if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
         let user = getUser(id);
         let updatedUser = {
@@ -245,17 +246,17 @@ let exportedMethods = {
             throw 'Update failed';
       
           return await this.getUser(id);
-    },
+    }
 
-    async addUser(name,username,password,email,profile_picture){
-        const userCollection = await user();
+const addUser = async function addUser(name,username,password,email,profile_picture){
+        const userCollection = await users();
         if(!name || typeof(name) != 'string'){
             throw 'user must input valid name';
         }
         if(!username || typeof(username) != 'string'){
             throw 'user must input valid username';
         }
-        if(!password || typeof(password) != 'password'){
+        if(!password || typeof(password) != 'string'){
             throw 'user must input valid password';
         }
         if(!email || typeof(email) != 'string'){
@@ -267,7 +268,7 @@ let exportedMethods = {
         }
 
         let newUser = {
-            _id: uuid(),
+            _id: new ObjectId(),
             name: name,
             username: username,
             password: await bcrypt.hash(password, saltRounds),
@@ -284,9 +285,9 @@ let exportedMethods = {
         const newInsertInformation = await userCollection.insertOne(newUser);
         if (newInsertInformation.insertedCount === 0) throw 'Insert failed!';
         return await getUser(newInsertInformation.insertedId);
-    },
+}
 
-    async removeUser(id) {
+const removeUser = async function removeUser(id) {
         if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
         const userCollection = await users();
         const deletionInfo = await userCollection.removeOne({ _id: id });
@@ -297,6 +298,21 @@ let exportedMethods = {
       }
     //maybe add functions to add/remove from the array variables of users (users_following, tags_following, recipes_saved)
     //alter methods to include new user data -> followers, num followers, and own recipes
-};
 
-module.exports = exportedMethods;
+
+module.exports = {
+    addUser,
+    getUser,
+    getUserByUsername,
+    addFollower,
+    addRecipe,
+    addTag,
+    deleteRecipe,
+    removeFollower,
+    unFollow,
+    removeRecipe,
+    removeTag,
+    removeUser,
+    updateUser,
+    saveRecipe
+}

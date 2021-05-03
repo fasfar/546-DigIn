@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
 
 router.get('/', async (req, res) => {
     if(req.session.user){
-        res.redirect('/private');
+        return res.redirect('/private');
     }
     else {
         if(req.session.error){
@@ -18,28 +18,30 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    console.log(req.body);
     if(!username || !password) {
         req.session.error = "401: Invalid Login Credentials";
-        res.redirect('/');
+        return res.redirect('/');
     }
     try{
-        thisUser = userData.getUserByUsername(username);
-        let match = await bcrypt.compare(password, thisUser["password-encryption-key"]);
+        let thisUser = await userData.getUserByUsername(username);
+        console.log(thisUser);
+        let match = await bcrypt.compare(password, thisUser['password']);
         if(match){
             req.session.user = thisUser;
-            res.redirect('/private');
+            return res.redirect('/private');
         }
         else{
             req.session.error = "401: Invalid Login Credentials"; 
-            res.redirect('/');
+            return res.redirect('/');
         }
     }
     catch(e){
-        req.session.error = "401: Invalid Login Credentials";
-        res.redirect('/');
+        console.log(e.toString())
+        return res.redirect('/');
     }
 })
 
@@ -54,9 +56,49 @@ router.get('/private', async (req, res) => {
 });
 
 router.get('/createUser', async (req, res) => {
-    res.render('users/createUser');
+    if(req.session.user){
+        return res.redirect('/private');
+    }
+    else res.render('users/createUser');
+});
+
+router.post('/createUser', async (req, res) => {
+    let newUser = req.body;
+    console.log(req.body);
+    try{
+        let thisUser = await data.users.addUser(newUser.registration_name, newUser.registration_username, newUser.registration_password, newUser.registration_email, newUser.registration_pic);
+        req.session.user = thisUser;
+        return res.redirect('/userProfile');
+    }
+    catch (e){
+        console.log(e.toString());
+    }
+});
+
+router.get('/userProfile', async (req, res) => {
+    if(req.session.user) res.render('users/userProfile', {user: req.session.user})
 })
 
+router.get('/otherUser/:id', async(req, res) => {
+    if(req.session.user){
+        try{
+            let otherUser = getUser(req.params.id);
+            return res.render('users/otherUser', {user: otherUser})
+        }
+        catch(e){
+            req.session.error = "User not found";
+        }
+    }
+    else{
+        req.session.error = "Login to continue"
+        res.redirect('/')
+    }
+});
+
+router.get('/logout', async (req, res) => {
+    req.session.destroy();
+    res.redirect('/')
+});
 module.exports = router;
 
 /*

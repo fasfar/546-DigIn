@@ -420,4 +420,3 @@ module.exports = {
     updatedTitle,
     removeRecipe
 };
-//make an updateAll and call the existing methods inside.

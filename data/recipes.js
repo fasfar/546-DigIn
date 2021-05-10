@@ -422,10 +422,7 @@ module.exports = {
 };
 
 
-<<<<<<< HEAD
-//make an updateAll and call the existing methods inside.
-=======
-*/
+/*
 const mongoCollections = require("../config/mongoCollections")
 const recipes = mongoCollections.recipes
 const {ObjectId} = require('mongodb');
@@ -700,6 +697,5 @@ module.exports = {
 
   
 }
+*/
 
-
->>>>>>> 7efa36a2ee028a5e6f4b7c85aec9bbdcda6faaa2

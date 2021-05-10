@@ -1,11 +1,7 @@
 {
   "name": "546-digin",
   "version": "1.0.0",
-<<<<<<< HEAD
-  "description": "digin test",
-=======
   "description": "This will be a recipe collaboration website.",
->>>>>>> 7efa36a2ee028a5e6f4b7c85aec9bbdcda6faaa2
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,23 +11,13 @@
     "type": "git",
     "url": "git+https://github.com/fasfar/546-DigIn.git"
   },
-<<<<<<< HEAD
-  "author": "Suzy Shailesh",
-=======
   "author": "Grace Miguel, Firas Asfar, Suzy Shailesh, Mike McCreesh",
->>>>>>> 7efa36a2ee028a5e6f4b7c85aec9bbdcda6faaa2
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/fasfar/546-DigIn/issues"
   },
   "homepage": "https://github.com/fasfar/546-DigIn#readme",
   "dependencies": {
-<<<<<<< HEAD
-    "express": "^4.17.1",
-    "express-handlebars": "^5.3.0",
-    "handlebars": "^4.7.7",
-    "mongodb": "^3.6.6"
-=======
     "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "express-handlebars": "^5.3.0",
@@ -39,6 +25,5 @@
     "handlebars": "^4.7.7",
     "mongodb": "^3.6.6",
     "uuid": "^8.3.2"
->>>>>>> 7efa36a2ee028a5e6f4b7c85aec9bbdcda6faaa2
   }
 }

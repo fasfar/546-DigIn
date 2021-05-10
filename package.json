@@ -1,0 +1,26 @@
+{
+  "name": "546-digin",
+  "version": "1.0.0",
+  "description": "digin test",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fasfar/546-DigIn.git"
+  },
+  "author": "Suzy Shailesh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fasfar/546-DigIn/issues"
+  },
+  "homepage": "https://github.com/fasfar/546-DigIn#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.0",
+    "handlebars": "^4.7.7",
+    "mongodb": "^3.6.6"
+  }
+}

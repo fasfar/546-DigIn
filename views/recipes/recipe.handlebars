@@ -1,0 +1,37 @@
+<div>
+    <h1>{{recipe.title}}</h1>
+
+    <dl>
+        <dt>Author</dt>
+        <dd>{{recipe.author}}</dd>
+
+        <dt>Ingredients</dt>
+        <dd>
+            <ul>
+                {{#each recipe.ingredients}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </dd>
+
+        <dt>Instructions</dt>
+        <dd>{{recipe.instructions}}</dd>
+
+        <dt>Pictures</dt>
+        <dd>{{recipe.pictures}}</dd>
+
+        <dt>Tags</dt>
+        <dd>
+            <ul>
+                {{#each recipe.tags}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </dd>
+        
+        {{!-- need to add likes and comments! --}}
+    </dl>
+
+    <a href="/recipes/delete/{{recipe._id}}">Delete recipe.</a>
+    <a href="/recipes/edit/{{recipe._id}}">Edit recipe.</a>
+</div>

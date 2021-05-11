@@ -1,0 +1,10 @@
+<div>
+    <a href="/recipes/addRecipe">Add new recipe.</a>
+    <ul>
+        {{#each all_recipe_list}}
+            <li>
+                <a href="/recipes/id/{{this._id}}">{{this.title}}</a>
+            </li>
+        {{/each}}
+    </ul>
+</div>

@@ -10,3 +10,27 @@
 h1 {
     font-weight: 100;
 }
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #70799e;      
+}
+
+nav li {
+    float: right;
+}
+  
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+}
+  
+nav li a:hover {
+    background-color: #49516f;
+}

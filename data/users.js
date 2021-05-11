@@ -6,9 +6,11 @@ const users = mongoCollections.users;
 const saltRounds = 16;
 
 const getUser = async function getUser(id){
-        console.log(id);
-        //if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
+        if(!id || !(id instanceof ObjectId))
+            if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
+                throw 'You need to input a valid id';
         const userCollection = await users();
+        if(typeof id === 'string') id = ObjectId(id);
         const user = await userCollection.findOne({ _id: id });
         if (!user) throw 'User not found';
         return user;
@@ -185,8 +187,9 @@ const deleteRecipe = async function deleteRecipe(id, recipeId){
 }
 
 const updateUser = async function updateUser(id, newUser){
-        if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
-        let user = getUser(id);
+        if(!id || typeof id != 'string') throw 'You need to input a valid id';
+        console.log(newUser);
+        let user = await getUser(id);
         let updatedUser = {
             name: user.name,
             username: user.username,
@@ -201,6 +204,7 @@ const updateUser = async function updateUser(id, newUser){
             num_followers: user.num_followers,
             num_following: user.num_following
         };
+        console.log(updatedUser);
         if(newUser.name && typeof(newUser.name) == 'string'){
             updatedUser.name = newUser.name;
         }
@@ -237,15 +241,16 @@ const updateUser = async function updateUser(id, newUser){
         if(newUser.num_following && typeof(num_following) == 'number'){
             updatedUser.num_following = newUser.num_following;
         }
+        console.log(updatedUser);
         const userCollection = await users();
         const updateInfo = await userCollection.updateOne(
-            { _id: id },
+            { _id: ObjectId(id) },
             { $set: updatedUser }
           );
-          if (!updateInfo.matchedCount && !updateInfo.modifiedCount)
+        if (!updateInfo.matchedCount && !updateInfo.modifiedCount)
             throw 'Update failed';
       
-          return await this.getUser(id);
+        return await getUser(id);
     }
 
 const addUser = async function addUser(name,username,password,email,profile_picture){

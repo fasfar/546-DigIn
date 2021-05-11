@@ -35,6 +35,12 @@ app.use(session({
     saveUninitialized: true
   }));
 
+app.use('/editUser', (req, res, next) =>{
+  if(req.method == 'POST'){
+    req.method = 'PATCH';
+  }
+  next();
+})
 
 configRoutes(app);
 

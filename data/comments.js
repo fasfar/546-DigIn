@@ -3,9 +3,8 @@ const recipes = mongoCollections.recipes
 const {ObjectId} = require('mongodb');
 const allRecipes = require('./recipes')
 const user = require('./users');
-const { getAllRecipes } = require("./recipes");
 
-//DO WE WANT TO MAKE COMMENTS A COLLECTION?
+
 const str_err_check = function str_err_check(str, param_name){
     if(!str){
         throw `Please provide ${param_name}`
@@ -73,7 +72,7 @@ module.exports = {
             let commentInfo = {
                 _id: commentList[i]._id.toString(), 
                 user: commentList[i].user, 
-                comments: commentlist[i].comments
+                comments: commentList[i].comments
             }
             allComments.push(commentInfo)
         }
@@ -91,25 +90,35 @@ module.exports = {
         let updatedCommentList = []
         let foundRecipeId = ""
 
-        //search every 
+        //search every comment in every recipe to find the requested comment
+        for(i=0; i<totalRecipes.length; i++){
+            let currId = totalRecipes[i]
+            currId = currId._id.toString()
+            let commentList = await this.getAll(currId) 
+
+            for(j=0; j< commentList.length; j++){
+                if(commentList[i]._id.toString() === id){
+                    found = true
+                    //delete it!
+                    commentList.splice(i,1)
+                    updatedCommentList = commentList
+                    foundRecipeId = currId
+                    break
+                }
+            }
+            if(found === true)
+            break
+        }
+        if(found === false){
+            throw 'Comment not found'
+        }
+        let updatedRecipeData = {}
+        updatedRecipeData.comments = updatedCommentList
+
+        const recipeCollection = await recipes()
+        await recipeCollection.updateOne({_id: ObjectId(foundRecipeId)}, {$set: updatedRecipeData})
+        return {commentId: id, deleted: true}
     }
 
 
-    // async delete(id){
-    //     if (!id){
-
-    //         throw 'You must provide an id';
-    //        }
-    //        if (typeof id !== 'string'){
-   
-    //            throw 'id must be a string';
-    //        }
-    //        if (!id.trim()){
-   
-    //         throw 'id is an empty string';
-    //        }
-    //        id.trim();
-       
-    //        let obj = ObjectId(id);
-    //}
 }

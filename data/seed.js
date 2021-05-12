@@ -15,9 +15,12 @@ const main = async() => {
     // console.log(comment)
     // const comment1 = await recipes.addCommentToRecipe(bananaBread._id, comment._id)
     const comment2 = await comments.createComment(bananaBread._id, "grace", "it's sooo moist")
+    console.log(comment2._id)
+    console.log(bananaBread._id)
     let id = bananaBread._id
     const allCom = await comments.getAll(id)
-    console.log(allCom)
+    const removecom = await comments.remove(comment._id)
+  
 
     // const removeComment = await comments.remove(comment._id)
 

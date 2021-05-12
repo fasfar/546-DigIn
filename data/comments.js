@@ -44,16 +44,20 @@ const str_err_check = function str_err_check(str, param_name){
         const insertInfo = await recipeCollection.updateOne({_id: recipeId}, {$addToSet: {_id: recipeId, comments: newComment}})
         const updated_recipe = await allRecipes.getRecipeById(recipeId)
         return {
-            _id: updated_recipe._id.toString(), 
-            title: updated_recipe.title, 
-            author: updated_recipe.author,
-            ingredients: updated_recipe.ingredients,
-            instructions: updated_recipe.instructions,
-            likes: updated_recipe.likes, 
-            total_likes: updated_recipe.total_likes,
-            tags: updated_recipe.tags,
-            comments: updated_recipe.comments,
-            pictures: updated_recipe.pictures
+            // _id: updated_recipe._id.toString(), 
+            // title: updated_recipe.title, 
+            // author: updated_recipe.author,
+            // ingredients: updated_recipe.ingredients,
+            // instructions: updated_recipe.instructions,
+            // likes: updated_recipe.likes, 
+            // total_likes: updated_recipe.total_likes,
+            // tags: updated_recipe.tags,
+            // comments: updated_recipe.comments,
+            // pictures: updated_recipe.pictures
+            _id: newComment._id,
+            user: newComment.user, 
+            comment: newComment.comment
+            
         }
 
     }
@@ -71,11 +75,11 @@ const str_err_check = function str_err_check(str, param_name){
       
 
     async function remove(id){
-        let error_check = str_err_check(id)
-        if(typeof error_check != 'string'){
+        const strId = id.toString()
+        let error_check = str_err_check(strId, "ID")
+        if(typeof error_check  === 'string'){
             throw error_check;
         }
-
         //get all recioes with their comments
         let totalRecipes = await allRecipes.getAllRecipes()
         let found = false
@@ -89,8 +93,8 @@ const str_err_check = function str_err_check(str, param_name){
             let commentList = await this.getAll(currId) 
 
             for(j=0; j< commentList.length; j++){
-                if(commentList[i]._id.toString() === id){
-                    console.log("FOUND IT")
+                console.log(commentList[i]._id.toString())
+                if(commentList[i]._id.toString() == id){
                     found = true
                     //delete it!
                     commentList.splice(i,1)
@@ -100,6 +104,7 @@ const str_err_check = function str_err_check(str, param_name){
                 }
             }
             if(found === true)
+            console.log("successfully deleted")
             break
         }
         if(found === false){

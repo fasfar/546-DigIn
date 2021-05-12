@@ -64,7 +64,7 @@ router.get('/createUser', async (req, res) => {
 router.post('/createUser', async (req, res) => {
     let newUser = req.body;
     try{
-        let thisUser = await userData.addUser(newUser.registration_name, newUser.registration_username, newUser.registration_password, newUser.registration_email, newUser.registration_pic);
+        let thisUser = await userData.addUser(newUser.name, newUser.username, newUser.password, newUser.email, newUser.profile_picture);
         req.session.user = thisUser;
         return res.redirect('/private');
     }

@@ -1,5 +1,13 @@
 <div id="userProfile">
     <h1>{{user.username}}</h1>
+    <img src = {{user.profile_picture}} alt = "Profile Picture">
+    <p>ID: {{user._id}}</p>
+    <p>Your Recipes</p>
+    {{#each user.own_recipes}}
+        <li>
+            <a href="/recipes/id/{{recipe.id}}">Recipe</a>
+        </li>
+    {{/each}}   
     <a href="/logout">Logout</a>
     <a href="/editUser">Edit Profile</a>
 </div>

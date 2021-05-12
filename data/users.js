@@ -6,6 +6,7 @@ const users = mongoCollections.users;
 const saltRounds = 16;
 
 const getUser = async function getUser(id){
+    try{
         if(!id || !(id instanceof ObjectId))
             if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
                 throw 'You need to input a valid id';
@@ -14,19 +15,26 @@ const getUser = async function getUser(id){
         const user = await userCollection.findOne({ _id: id });
         if (!user) throw 'User not found';
         return user;
-    };
+    }catch(e){
+        throw 'issue with getUser(id)';
+    }
+};
 
 const getUserByUsername = async function getUserByUsername(username){
+    try{
         if(!username || typeof(username) != 'string') throw 'You need to input a valid username';
         const userCollection = await users();
         const user = await userCollection.findOne({ username: username });
         if (!user) throw 'User not found';
         return user;
-    };
+    }catch(e){
+        throw 'issue with getUserByUsername';
+    }
+};
 
 const addFollower = async function addFollower(id1, id2){
         //id1 is followed by id2
-        const user = this.getUser(id1);
+        const user = await this.getUser(id1);
         let followers = user.followers;
         if(followers.includes(id2)){
             throw id2 + ' already follows ' + id1;
@@ -42,7 +50,7 @@ const addFollower = async function addFollower(id1, id2){
 
 const removeFollower = async function removeFollower(id1, id2){
         //id1 is unfollowed by id2
-        const user = this.getUser(id1);
+        const user = await this.getUser(id1);
         let followers = user.followers;
         if(!followers.includes(id2)){
             throw id2 + ' does not follow ' + id1;
@@ -60,7 +68,7 @@ const removeFollower = async function removeFollower(id1, id2){
 
 const follow = async function follow(id1, id2){
         //id1 follows id2
-        const user = this.getUser(id1);
+        const user = await this.getUser(id1);
         let users_following = user.users_following;
         if(users_following.includes(id2)){
             throw id1 + ' already follows ' + id2;
@@ -76,7 +84,7 @@ const follow = async function follow(id1, id2){
 
 const unFollow = async function unFollow(id1, id2){
         //id1 unfollows id2
-        const user = this.getUser(id1);
+        const user = await this.getUser(id1);
         let users_following = user.users_following;
         if(!users_following.includes(id2)){
             throw id1 + ' does not follow ' + id2;
@@ -93,7 +101,7 @@ const unFollow = async function unFollow(id1, id2){
     };
 
 const addTag = async function addTag(id, tag){
-        const user = this.getUser(id);
+        const user = await this.getUser(id);
         let tags = user.tags_following;
         if(tags.includes(tag)){
             throw 'Already following tag ' + tag;
@@ -107,7 +115,7 @@ const addTag = async function addTag(id, tag){
     };
 
 const removeTag = async function removeTag(id, tag){
-        const user = this.getUser(id);
+        const user = await this.getUser(id);
         let tags = user.tags_following;
         if(!tags.includes(tag)){
             throw 'Tag not followed'
@@ -124,7 +132,7 @@ const removeTag = async function removeTag(id, tag){
 
 const saveRecipe = async function saveRecipe(id, recipeId){
         //new saved recipe
-        const user = this.getUser(id);
+        const user = await this.getUser(id);
         let recipes = user.recipes_saved;
         if(recipes.includes(recipeId)){
             throw 'recipe already followed';
@@ -139,7 +147,7 @@ const saveRecipe = async function saveRecipe(id, recipeId){
 
 const removeRecipe = async function removeRecipe(id, recipeId){
         //remove from saved recipes
-        const user = this.getUser(id);
+        const user = await this.getUser(id);
         let recipes = user.recipes_saved;
         if(!recipes.includes(recipeId)){
             throw 'recipe not followed';
@@ -156,16 +164,22 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
-        const user = this.getUser(id);
-        let recipes = user.own_recipes;
-        if(recipes.includes(recipeId)){
-            throw 'recipe already made';
-        }else{
-            recipes.push(recipeId);
-            let obj = {
-                own_recipes: recipes
-            };
-            return this.updateUser(id, obj);
+        try {
+            console.log(id);
+            console.log(recipeId);
+            const user = await this.getUser(id);
+            let recipes = user.own_recipes;
+            if(recipes.includes(recipeId)){
+                throw 'recipe already made';
+            }else{
+                recipes.push(recipeId);
+                let obj = {
+                    own_recipes: recipes
+                };
+                return await this.updateUser(id, obj);
+            }
+        }catch(e){
+            throw '' + e;
         }
     };
 
@@ -261,14 +275,16 @@ const addUser = async function addUser(name,username,password,email,profile_pict
         if(!username || typeof(username) != 'string'){
             throw 'user must input valid username';
         }
+        const someUser = await userCollection.findOne({ username: username });
+        if (someUser) throw 'Username is already taken';
         if(!password || typeof(password) != 'string'){
             throw 'user must input valid password';
         }
         if(!email || typeof(email) != 'string'){
             throw 'user must input valid name';
         }
-        if(!profile_picture || typeof(profile_picture) != 'string'){
-            throw 'user must input valid profile_picture';
+        if(!profile_picture){
+            throw 'user must input profile_picture';
             //perhaps we should change this to set it to a default profile picture if one isnt submitted
         }
 

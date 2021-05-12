@@ -4,6 +4,7 @@ const { parseConnectionString } = require('mongodb/lib/core');
 const router = express.Router();
 const data = require('../data');
 const recipeData = data.recipes;
+const userData = data.users;
 
 const makeArray = function makeArray(str){
   return str.split(',');

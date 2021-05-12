@@ -75,7 +75,7 @@ async function addRecipe(title, author, ingredients, instructions, tags, picture
         likes: [],
         total_likes: 0,
         tags: tags, 
-        comments: "",
+        comments: [],
         pictures: picture
     }
     
@@ -94,7 +94,7 @@ async function addRecipe(title, author, ingredients, instructions, tags, picture
         likes: [],
         total_likes: 0,
         tags: tags, 
-        comments: "",
+        comments: [],
         pictures: picture
     };
     

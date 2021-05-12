@@ -17,11 +17,11 @@ const str_err_check = function str_err_check(str, param_name){
     }
     return 1
 }
-module.exports = {
-   
 
-    async createComment(id, user, comment){
-        str_err_check(id, "id")
+
+ 
+    async function createComment(recipeId, user, comment){
+        str_err_check(recipeId, "id")
         str_err_check(comment, "comment")
         str_err_check(user, "user")
         
@@ -33,16 +33,16 @@ module.exports = {
             user: user, 
             comment: comment
         }
-        let recipe =await allRecipes.getRecipeById(id)
+        let recipe =await allRecipes.getRecipeById(recipeId)
         let oldComments = recipe.comments       //get exisiting comments
         const updatedComments ={}
         oldComments.push(newComment)        //append new comment to comments array
         updatedComments.comments = oldComments
 
         //update recipe collection to have new comment
-        await recipeCollection.updateOne({_id : ObjectId(id)}, {$set: updatedComments})
+        await recipeCollection.updateOne({_id : ObjectId(recipeId)}, {$set: updatedComments})
         const insertInfo = await recipeCollection.updateOne({_id: recipeId}, {$addToSet: {_id: recipeId, comments: newComment}})
-        const updated_recipe = await allRecipes.getRecipeById(id)
+        const updated_recipe = await allRecipes.getRecipeById(recipeId)
         return {
             _id: updated_recipe._id.toString(), 
             title: updated_recipe.title, 
@@ -56,8 +56,8 @@ module.exports = {
             pictures: updated_recipe.pictures
         }
 
-    },
-    async getAll(id){
+    }
+    async function  getAll(id){
         let error_check = str_err_check(id, "id")
         if(typeof error_check === "string"){
             throw error_check
@@ -65,20 +65,12 @@ module.exports = {
         //access comments for the requested recipe
         let recipe = await allRecipes.getRecipeById(id)
         let commentList = recipe.comments
-        let allComments = []
+      
+        return commentList
+    }
+      
 
-        //create objects to return with id as string
-        for(i=0; recipe.comments.length; i++){
-            let commentInfo = {
-                _id: commentList[i]._id.toString(), 
-                user: commentList[i].user, 
-                comments: commentList[i].comments
-            }
-            allComments.push(commentInfo)
-        }
-        return allComments
-    }, 
-    async delete(id){
+    async function remove(id){
         let error_check = str_err_check(id)
         if(typeof error_check != 'string'){
             throw error_check;
@@ -98,6 +90,7 @@ module.exports = {
 
             for(j=0; j< commentList.length; j++){
                 if(commentList[i]._id.toString() === id){
+                    console.log("FOUND IT")
                     found = true
                     //delete it!
                     commentList.splice(i,1)
@@ -120,5 +113,6 @@ module.exports = {
         return {commentId: id, deleted: true}
     }
 
-
+module.exports = {
+    createComment, getAll, remove
 }

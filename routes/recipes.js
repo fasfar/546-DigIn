@@ -72,10 +72,6 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: 'You must provide recipe title' });
     return;
   }
-  if (!recipe.author) {
-    res.status(400).json({ error: 'You must provide recipe author' });
-    return;
-  }
   if (!recipe.ingredients) {
     res.status(400).json({ error: 'You must provide recipe ingredients' });
     return;
@@ -96,7 +92,8 @@ router.post('/', async (req, res) => {
     try {
       const {title, ingredients, tags, instructions, pictures} = recipe;
       let author = req.session.user.username;
-      const newRecipe = await recipeData.addRecipe(title, author, makeArray(ingredients), instructions, makeArray(tags), pictures);
+      let author_id = req.session.user._id;
+      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(tags), pictures);
       res.render("recipes/recipeAddedSuccessfully");
     } catch (e) {
       res.status(400).json({ error: e.toString() });

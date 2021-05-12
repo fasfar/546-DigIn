@@ -80,7 +80,7 @@ router.post('/createUser', async (req, res) => {
 router.get('/otherUser/:id', async(req, res) => {
     if(req.session.user){
         try{
-            let otherUser = getUser(req.params.id);
+            let otherUser = await userData.getUser(req.params.id);
             return res.render('users/otherUser', {user: otherUser})
         }
         catch(e){

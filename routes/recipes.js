@@ -19,27 +19,45 @@ router.get('/id/:id', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-  try {
-    const recipeList = await recipeData.getAllRecipes();
-    res.render("recipes/allRecipes", {all_recipe_list: recipeList});
-  } catch (e) {
-    res.status(500).json({ error: e });
+  if(req.session.user){
+    try {
+      const recipeList = await recipeData.getAllRecipes();
+      res.render("recipes/allRecipes", {all_recipe_list: recipeList});
+    } catch (e) {
+      res.status(500).json({ error: e });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
   }
 });
 
 router.get('/addRecipe', async (req, res) => {
-  try {
-    res.render("recipes/addRecipe");
-  } catch (e) {
-    res.status(500).json({ error: e });
+  if(req.session.user){
+    try {
+      res.render("recipes/addRecipe");
+    } catch (e) {
+      res.status(500).json({ error: e });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
   }
 });
 
 router.get('/edit/:id', async (req, res) => {
-  try {
-    res.render("recipes/editRecipe", {id: req.params.id});
-  } catch (e) {
-    res.status(500).json({ error: e });
+  if(req.session.user){
+    try {
+      res.render("recipes/editRecipe", {id: req.params.id});
+    } catch (e) {
+      res.status(500).json({ error: e });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
   }
 });
 
@@ -74,13 +92,19 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: 'You must provide recipe picture' });
     return;
   }
-  
-  try {
-    const {title, author, ingredients, tags, instructions, pictures} = recipe;
-    const newRecipe = await recipeData.addRecipe(title, author, makeArray(ingredients), instructions, makeArray(tags), pictures);
-    res.render("recipes/recipeAddedSuccessfully");
-  } catch (e) {
-    res.status(400).json({ error: e.toString() });
+  if(req.session.user){
+    try {
+      const {title, ingredients, tags, instructions, pictures} = recipe;
+      let author = req.session.user.username;
+      const newRecipe = await recipeData.addRecipe(title, author, makeArray(ingredients), instructions, makeArray(tags), pictures);
+      res.render("recipes/recipeAddedSuccessfully");
+    } catch (e) {
+      res.status(400).json({ error: e.toString() });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
   }
 });
 

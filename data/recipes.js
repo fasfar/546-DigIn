@@ -18,6 +18,7 @@
 const mongoCollections = require("../config/mongoCollections")
 const recipes = mongoCollections.recipes
 const {ObjectId} = require('mongodb');
+const userData = require('./users.js')
 //const { recipes } = require("../config/mongoCollections");
 
 //get all recipes
@@ -85,6 +86,11 @@ async function addRecipe(title, author, ingredients, instructions, tags, picture
     }
     const newId = insertRecipe.insertedId.toString()
     const added_recipe = await this.getRecipeById(newId)
+
+    //add recipe to author's own_recipes array
+    let user = await userData.getUserByUsername(author);
+    await userData.addRecipe(user._id,newId);
+
     return {
         _id : newId,
         title: title, 

@@ -1,5 +1,11 @@
 <div id="userProfile">
     <h1>{{user.username}}</h1>
+    <a href="/followers" class="followLink">{{user.num_followers}} Followers</a>
+    <a href="/following" class="followLink">{{user.num_following}} Following</a>
+    <div>
+        <ul id="showList">{{#each recipes}} <li><a href="/recipes/id/{{this._id}}">{{this.title}}</a></li> {{/each}}</ul>
+    </div>
+    
     <a href="/logout">Logout</a>
     <a href="/editUser">Edit Profile</a>
 </div>

@@ -47,7 +47,9 @@ router.get('/private', async (req, res) => {
     if(req.session.user) {
         console.log(req.session.user);
         let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username)
-        console.log(userRecipes);
+        for(recipe of userRecipes){
+            console.log(recipe.title);
+        }
         return res.render("users/userProfile", {user: req.session.user, recipes: userRecipes});
     }
     else{

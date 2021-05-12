@@ -45,7 +45,10 @@ router.post('/login', async (req, res) => {
 
 router.get('/private', async (req, res) => {
     if(req.session.user) {
-        return res.render("users/userProfile", {user: req.session.user});
+        console.log(req.session.user);
+        let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username)
+        console.log(userRecipes);
+        return res.render("users/userProfile", {user: req.session.user, recipes: userRecipes});
     }
     else{
         req.session.error = "401: Unauthorized User";
@@ -63,7 +66,7 @@ router.get('/createUser', async (req, res) => {
 router.post('/createUser', async (req, res) => {
     let newUser = req.body;
     try{
-        let thisUser = await userData.addUser(newUser.registration_name, newUser.registration_username, newUser.registration_password, newUser.registration_email, newUser.registration_pic);
+        let thisUser = await userData.addUser(newUser.name, newUser.username, newUser.password, newUser.email, newUser.profile_picture);
         req.session.user = thisUser;
         return res.redirect('/private');
     }
@@ -101,7 +104,7 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 userData.follow(req.session.user._id,req.params.id); //session user follows route user
                 userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
-                
+
             }
             catch (e){
                 console.log(e.toString());

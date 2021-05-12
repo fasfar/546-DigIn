@@ -164,7 +164,9 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
+        console.log("1");
         const user = await getUser(id);
+        console.log(user);
         let recipes = user.own_recipes;
         if(recipes.includes(recipeId)){
             throw 'recipe already made';
@@ -173,7 +175,7 @@ const addRecipe = async function addRecipe(id, recipeId){
             let obj = {
                 own_recipes: recipes
             };
-            return this.updateUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
@@ -195,7 +197,9 @@ const deleteRecipe = async function deleteRecipe(id, recipeId){
 }
 
 const updateUser = async function updateUser(id, newUser){
-        if(!id || typeof id != 'string') throw 'You need to input a valid id';
+        if(!id || !(id instanceof ObjectId))
+            if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
+                throw 'You need to input a valid id';
         console.log(newUser);
         let user = await getUser(id);
         let updatedUser = {

@@ -221,6 +221,10 @@ const updateUser = async function updateUser(id, newUser){
             updatedUser.name = newUser.name;
         }
         if(newUser.username && typeof(newUser.username) == 'string'){
+            const someUser = await getUserByUsername(username);
+            if(someUser){
+                throw 'Username already taken';
+            }
             updatedUser.username = newUser.username;
         }
         if(newUser.password && typeof(newUser.password) == 'string'){
@@ -272,6 +276,10 @@ const addUser = async function addUser(name,username,password,email,profile_pict
         }
         if(!username || typeof(username) != 'string'){
             throw 'user must input valid username';
+        }
+        const someUser = await getUserByUsername(username);
+        if(someUser){
+            throw 'Username already taken';
         }
         if(!password || typeof(password) != 'string'){
             throw 'user must input valid password';

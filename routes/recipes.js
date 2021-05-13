@@ -33,6 +33,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 router.get('/addRecipe', async (req, res) => {
   if(req.session.user){
     try {
@@ -92,7 +93,8 @@ router.post('/', async (req, res) => {
     try {
       const {title, ingredients, tags, instructions, pictures} = recipe;
       let author = req.session.user.username;
-      const newRecipe = await recipeData.addRecipe(title, author, makeArray(ingredients), instructions, makeArray(tags), pictures);
+      let author_id = req.session.user._id;
+      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(tags), pictures);
       res.render("recipes/recipeAddedSuccessfully");
     } catch (e) {
       res.status(400).json({ error: e.toString() });
@@ -218,5 +220,44 @@ router.delete('/delete/:id', async (req, res) => {
   }
   res.render("recipes/recipeDeletedSuccessfully");
 });
+router.post('/searchByTag/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
+  try{
+    const recipeTag = req.params.searchTerm
+  
+    const recipes = await recipeData.getRecipeByTag(recipeTag);
+    console.log(recipes)
+    res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
+  }
+  catch(e){
+    res.status(404).json({error: "Recipes not found"})
+  }
+
+})
+router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
+  try{
+    const recipeName = req.params.searchTerm
+    const recipes = await recipeData.getRecipeByTitle(recipeName);
+    console.log(recipeName)
+    console.log(recipes)
+    res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
+  }
+  catch(e){
+    res.status(404).json({error: "Recipes not found"})
+  }
+
+})
+router.post('/searchByAuthor/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
+  try{
+    const author = req.params.searchTerm
+    console.log(author)
+    const recipes = await recipeData.getRecipeByAuthor(author);
+    console.log(recipes)
+    res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
+  }
+  catch(e){
+    res.status(404).json({error: "Recipes not found"})
+  }
+
+})
 
 module.exports = router;

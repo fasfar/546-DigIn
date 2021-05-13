@@ -1,0 +1,9 @@
+<div id="searchedRecipes">
+    <dl> {{#each recipes}} 
+        <dt><h3><a href="/recipes/id/{{this._id}}">{{this.title}}</a></h3></dt>
+        <dt>{{this.author}}</dt>
+
+        {{/each}}
+    </dl>  
+</div>
+

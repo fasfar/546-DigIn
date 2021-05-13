@@ -2,8 +2,8 @@ const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongodb').ObjectId;
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
-//const uuid = require('uuid/v4');
-const saltRounds = 12;
+const recipes = mongoCollections.recipes;
+const saltRounds = 16;
 
 const getUser = async function getUser(id){
         if(!id || !(id instanceof ObjectId))
@@ -103,10 +103,16 @@ const isFollowing = async function isFollowing(id1, id2){
     const user = await getUser(id1);
     let users_following = user.users_following;
     if(users_following.includes(id2)) return true;
-    else return false;
+    return false;
 }
 
 const addTag = async function addTag(id, tag){
+        if(!id){
+            throw 'user must be input';
+        }
+        if(!tag){
+            throw 'tag must be input';
+        }
         const user = await getUser(id);
         let tags = user.tags_following;
         if(tags.includes(tag)){
@@ -116,11 +122,17 @@ const addTag = async function addTag(id, tag){
             let obj = {
                 tags_following: tags
             }
-            return updatedUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
 const removeTag = async function removeTag(id, tag){
+    if(!id){
+        throw 'user must be input';
+    }
+    if(!tag){
+        throw 'tag must be input';
+    }
         const user = await getUser(id);
         let tags = user.tags_following;
         if(!tags.includes(tag)){
@@ -132,7 +144,7 @@ const removeTag = async function removeTag(id, tag){
             let obj = {
                 tags_following: tags
             }
-            return updatedUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
@@ -170,9 +182,7 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
-        console.log("1");
         const user = await getUser(id);
-        console.log(user);
         let recipes = user.own_recipes;
         if(recipes.includes(recipeId)){
             throw 'recipe already made';
@@ -202,11 +212,47 @@ const deleteRecipe = async function deleteRecipe(id, recipeId){
         }
 }
 
+const getTags = async function getTags(id){
+    try{
+        const user = await getUser(id);
+        return user.tags_following;
+    }catch(e){
+        throw 'issue with get tags';
+    }
+}
+
+const getFollowing = async function getFollowing(id){
+    try{
+        const user = await getUser(id);
+        return user.users_following;
+    }catch(e){
+        throw 'issue with get tags';
+    }
+}
+
+const getFeed = async function getFeed(id){
+    try{
+        let tags  = await getTags(id)
+        let following  = await getFollowing(id);
+        const recipeCollection= await recipes();
+        let recipesBy = [];
+        recipeCollection.find().forEach(function(recipe){
+            if((tags.filter(value => recipe.tags.includes(value)) != []) || following.includes(recipe.author_id)){
+                recipesBy.push(recipe);
+            }
+        });
+        return recipesBy;
+
+    }catch(e){
+        throw 'issue with get feed';
+    }
+}
+
 const updateUser = async function updateUser(id, newUser){
         if(!id || !(id instanceof ObjectId))
             if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
                 throw 'You need to input a valid id';
-        console.log(newUser);
+        //console.log(newUser);
         let user = await getUser(id);
         let updatedUser = {
             name: user.name,
@@ -222,11 +268,15 @@ const updateUser = async function updateUser(id, newUser){
             num_followers: user.num_followers,
             num_following: user.num_following
         };
-        console.log(updatedUser);
+        //console.log(updatedUser);
         if(newUser.name && typeof(newUser.name) == 'string'){
             updatedUser.name = newUser.name;
         }
         if(newUser.username && typeof(newUser.username) == 'string'){
+            const someUser = await getUserByUsername(username);
+            if(someUser){
+                throw 'Username already taken';
+            }
             updatedUser.username = newUser.username;
         }
         if(newUser.password && typeof(newUser.password) == 'string'){
@@ -259,7 +309,7 @@ const updateUser = async function updateUser(id, newUser){
         if(newUser.num_following && typeof(num_following) == 'number'){
             updatedUser.num_following = newUser.num_following;
         }
-        console.log(updatedUser);
+        //console.log(updatedUser);
         const userCollection = await users();
         const updateInfo = await userCollection.updateOne(
             { _id: ObjectId(id) },
@@ -278,6 +328,10 @@ const addUser = async function addUser(name,username,password,email,profile_pict
         }
         if(!username || typeof(username) != 'string'){
             throw 'user must input valid username';
+        }
+        const someUser = await getUserByUsername(username);
+        if(someUser){
+            throw 'Username already taken';
         }
         if(!password || typeof(password) != 'string'){
             throw 'user must input valid password';
@@ -340,5 +394,8 @@ module.exports = {
     removeTag,
     removeUser,
     updateUser,
-    saveRecipe
+    saveRecipe,
+    getTags,
+    getFollowing, 
+    getFeed
 }

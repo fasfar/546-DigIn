@@ -22,19 +22,12 @@ const userData = require('./users.js')
 //const { recipes } = require("../config/mongoCollections");
 
 //get all recipes
-async function addRecipe(title, author, ingredients, instructions, tags, picture){ //leaving picture out for now
+async function addRecipe(title, author, author_id, ingredients, instructions, tags, picture){ //leaving picture out for now
     if(!title){
         throw 'Please provide a recipe title'
     }
     if(typeof title != 'string'){
         throw 'Please provide a proper title(words)'
-    }
-    //We need to figure out how we want to do the authors/users --> firebase?
-    if(!author){
-        throw 'Please provide an author'
-    }
-    if(typeof author != 'string'){
-        throw 'Please provide a proper author(string)'
     }
     if(!ingredients){                           //ingredients might have to be a subdocument because we need to separate quantity and ingredient for lookup
         throw 'Please provide ingredients.'
@@ -68,15 +61,17 @@ async function addRecipe(title, author, ingredients, instructions, tags, picture
         throw 'Please provide a file path to your photo'
     }
     const recipeCollection = await recipes()
+    
     let newRecipe = {
         title: title, 
         author: author, 
+        author_id: author_id,
         ingredients: ingredients, // list of objects
         instructions: instructions,
         likes: [],
         total_likes: 0,
         tags: tags, 
-        comments: "",
+        comments: [],
         pictures: picture
     }
     
@@ -95,17 +90,19 @@ async function addRecipe(title, author, ingredients, instructions, tags, picture
         _id : newId,
         title: title, 
         author: author, 
+        author_id: author_id,
         ingredients: ingredients, // list of objects
         instructions: instructions,
         likes: [],
         total_likes: 0,
         tags: tags, 
-        comments: "",
+        comments: [],
         pictures: picture
     };
     
 
 }
+
 
 async function getAllRecipes(){
     const recipeCollection = await recipes()
@@ -119,6 +116,7 @@ async function getAllRecipes(){
             _id: recipe._id.toString(),
             title: recipe.title, 
             author: recipe.author, 
+            author_id: recipe.author_id,
             ingredients: recipe.ingredients, // list of objects
             instructions: recipe.instructions,
             likes: recipe.likes,
@@ -191,9 +189,9 @@ async function getRecipeByTag(tag){
     if(typeof tag != 'string'){
         throw 'tag is not in string format.'
     }
-    const recipeCollection = recipes()
+    const recipeCollection = await recipes()
     return await recipeCollection
-    .find({'tag': tag})
+    .find({'tags': tag})
     .toArray()
 }
 
@@ -427,3 +425,4 @@ module.exports = {
     removeRecipe
 };
 
+//make an updateAll and call the existing methods inside.

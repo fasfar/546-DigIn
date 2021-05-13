@@ -1,6 +1,24 @@
 <div>
     <a href="/recipes/addRecipe">Add new recipe.</a>
-    <ul>
+    <div>
+    <form id="recipeForm" action="/search" method='POST'>
+    <label for "searchType">Search Type</label>
+    <select  id="searchType">
+        <option value="tag">Tag</option>
+        <option value="recipeName">Recipe Name</option>
+        <option value="author">Author</option>
+    </select>
+    <label for="recipeSearch">Search</label>
+    <input type="text" id="recipeSearch" name="recipe">
+    <button type="submit">Search</button>
+
+    </form>
+    <div id="searchResults" hidden>
+    </div>
+    
+</div>
+
+    <ul id="allRecipes">
         {{#each all_recipe_list}}
             <li>
                 <a href="/recipes/id/{{this._id}}">{{this.title}}</a>

@@ -5,7 +5,6 @@ const userData = data.users
 const recipeData = data.recipes;
 const bcrypt = require('bcryptjs');
 
-
 router.get('/', async (req, res) => {
     if(req.session.user){
         return res.redirect('/private');
@@ -91,8 +90,12 @@ router.post('/createUser', async (req, res) => {
 router.get('/otherUser/:id', async(req, res) => {
     if(req.session.user){
         try{
-            let otherUser = await getUser(req.params.id);
-            return res.render('users/otherUser', {user: otherUser})
+            let otherUser = await userData.getUser(req.params.id);
+            if(req.session.user._id == req.params.id){
+                return res.redirect('/private');
+            }else{
+                return res.render('users/otherUser', {user: otherUser})
+            }
         }
         catch(e){
             req.session.error = "User not found";
@@ -193,6 +196,62 @@ router.patch('/editUser', async (req, res) => {
             let updatedUser = await userData.updateUser(req.session.user._id, newUser);
             req.session.user = updatedUser;
             res.redirect('/private');
+        }
+        catch (e){
+            console.log(e.toString());
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User; cannot update User info"
+        res.redirect('/');
+    }
+});
+
+router.get('/feed', async (req, res) => {
+    if(req.session.user){
+        try{
+            let user = req.session.user;
+            let feed = await userData.getFeed(user._id);
+            res.render('users/feed', {feed: feed});
+
+        }
+        catch (e){
+            console.log(e.toString());
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User; cannot update User info"
+        res.redirect('/');
+    }
+});
+
+router.get('/tags', async (req, res) =>{
+    if(req.session.user){
+        try{
+            let user = req.session.user;
+            let tags = await userData.getTags(user._id);
+            res.render('users/tags', {tags: tags});
+
+        }
+        catch (e){
+            console.log(e.toString());
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User; cannot update User info"
+        res.redirect('/');
+    }
+});
+
+router.post('/tags/:tag', async (req, res) =>{
+    if(req.session.user){
+        try{
+            console.log(req.params.tag);
+            let user = req.session.user;
+            let tag = req.params.tag;
+            let FollowedTag = await userData.addTag(user._id, tag)
+            res.send(tag);
+
         }
         catch (e){
             console.log(e.toString());

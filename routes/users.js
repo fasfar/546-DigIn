@@ -80,7 +80,11 @@ router.get('/otherUser/:id', async(req, res) => {
     if(req.session.user){
         try{
             let otherUser = await userData.getUser(req.params.id);
-            return res.render('users/otherUser', {user: otherUser})
+            if(req.session.user._id == req.params.id){
+                return res.redirect('/private');
+            }else{
+                return res.render('users/otherUser', {user: otherUser})
+            }
         }
         catch(e){
             req.session.error = "User not found";
@@ -226,11 +230,14 @@ router.get('/tags', async (req, res) =>{
     }
 });
 
-router.post('/tags', async (req, res) =>{
+router.post('/tags/:tag', async (req, res) =>{
     if(req.session.user){
         try{
+            console.log(req.params.tag);
             let user = req.session.user;
-            let tag = req.body.followTag;
+            let tag = req.params.tag;
+            let FollowedTag = await userData.addTag(user._id, tag)
+            res.send(tag);
 
         }
         catch (e){

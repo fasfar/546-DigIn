@@ -3,7 +3,6 @@ const { ObjectId } = require('mongodb').ObjectId;
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const recipes = mongoCollections.recipes;
-//const uuid = require('uuid/v4');
 const saltRounds = 16;
 
 const getUser = async function getUser(id){
@@ -102,6 +101,12 @@ const isFollowing = async function isFollowing(id1, id2){
 }
 
 const addTag = async function addTag(id, tag){
+        if(!id){
+            throw 'user must be input';
+        }
+        if(!tag){
+            throw 'tag must be input';
+        }
         const user = await getUser(id);
         let tags = user.tags_following;
         if(tags.includes(tag)){
@@ -111,11 +116,17 @@ const addTag = async function addTag(id, tag){
             let obj = {
                 tags_following: tags
             }
-            return updatedUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
 const removeTag = async function removeTag(id, tag){
+    if(!id){
+        throw 'user must be input';
+    }
+    if(!tag){
+        throw 'tag must be input';
+    }
         const user = await getUser(id);
         let tags = user.tags_following;
         if(!tags.includes(tag)){
@@ -127,7 +138,7 @@ const removeTag = async function removeTag(id, tag){
             let obj = {
                 tags_following: tags
             }
-            return updatedUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
@@ -165,9 +176,7 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
-        console.log("1");
         const user = await getUser(id);
-        console.log(user);
         let recipes = user.own_recipes;
         if(recipes.includes(recipeId)){
             throw 'recipe already made';
@@ -237,7 +246,7 @@ const updateUser = async function updateUser(id, newUser){
         if(!id || !(id instanceof ObjectId))
             if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
                 throw 'You need to input a valid id';
-        console.log(newUser);
+        //console.log(newUser);
         let user = await getUser(id);
         let updatedUser = {
             name: user.name,
@@ -253,7 +262,7 @@ const updateUser = async function updateUser(id, newUser){
             num_followers: user.num_followers,
             num_following: user.num_following
         };
-        console.log(updatedUser);
+        //console.log(updatedUser);
         if(newUser.name && typeof(newUser.name) == 'string'){
             updatedUser.name = newUser.name;
         }
@@ -294,7 +303,7 @@ const updateUser = async function updateUser(id, newUser){
         if(newUser.num_following && typeof(num_following) == 'number'){
             updatedUser.num_following = newUser.num_following;
         }
-        console.log(updatedUser);
+        //console.log(updatedUser);
         const userCollection = await users();
         const updateInfo = await userCollection.updateOne(
             { _id: ObjectId(id) },

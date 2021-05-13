@@ -1,3 +1,7 @@
-(function($){
-    let registrationBtn = $('#registration_button');
+(function ($) {
+    let follow_button = $("#follow_button");
+    follow_button.on('click', function (event) {
+        event.preventDefault();
+        
+    });
 })(window.jQuery)

@@ -1,9 +1,11 @@
 <div>
     <h1>{{recipe.title}}</h1>
-
+    
     <dl>
         <dt>Author</dt>
-        <dd>{{recipe.author}}</dd>
+        <dd>
+            <a href="/otheruser/{{recipe.author_id}}">{{recipe.author}}</a>
+        </dd>
 
         <dt>Ingredients</dt>
         <dd>
@@ -28,10 +30,21 @@
                 {{/each}}
             </ul>
         </dd>
+
+        <dt>Comments</dt>
+        <dd>
+            <ul>
+                {{#each recipe.comments}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </dd>
         
         {{!-- need to add likes and comments! --}}
     </dl>
 
+    <a href="/recipes/like/{{recipe._id}}">Like</a>
+    <a href="/recipes/comment/{{recipe._id}}">Add comment</a>
     <a href="/recipes/delete/{{recipe._id}}">Delete recipe.</a>
     <a href="/recipes/edit/{{recipe._id}}">Edit recipe.</a>
 </div>

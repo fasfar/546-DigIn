@@ -231,6 +231,8 @@ router.post('/tags', async (req, res) =>{
         try{
             let user = req.session.user;
             let tag = req.body.followTag;
+            let FollowedTag = await userData.addTag(user._id, tag)
+          
 
         }
         catch (e){

@@ -111,7 +111,7 @@ const addTag = async function addTag(id, tag){
             let obj = {
                 tags_following: tags
             }
-            return updatedUser(id, obj);
+            return  await updateUser(id, obj);
         }
     };
 

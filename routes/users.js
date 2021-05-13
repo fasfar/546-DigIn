@@ -4,8 +4,6 @@ const data = require('../data');
 const userData = data.users
 const recipeData = data.recipes;
 const bcrypt = require('bcryptjs');
-const mongoCollections = require('../config/mongoCollections');
-const users = mongoCollections.users;
 
 router.get('/', async (req, res) => {
     if(req.session.user){
@@ -198,6 +196,41 @@ router.get('/feed', async (req, res) => {
             let user = req.session.user;
             let feed = await userData.getFeed(user._id);
             res.render('users/feed', {feed: feed});
+
+        }
+        catch (e){
+            console.log(e.toString());
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User; cannot update User info"
+        res.redirect('/');
+    }
+});
+
+router.get('/tags', async (req, res) =>{
+    if(req.session.user){
+        try{
+            let user = req.session.user;
+            let tags = await userData.getTags(user._id);
+            res.render('users/tags', {tags: tags});
+
+        }
+        catch (e){
+            console.log(e.toString());
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User; cannot update User info"
+        res.redirect('/');
+    }
+});
+
+router.post('/tags', async (req, res) =>{
+    if(req.session.user){
+        try{
+            let user = req.session.user;
+            let tag = req.body.followTag;
 
         }
         catch (e){

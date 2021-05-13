@@ -185,9 +185,9 @@ async function getRecipeByTag(tag){
     if(typeof tag != 'string'){
         throw 'tag is not in string format.'
     }
-    const recipeCollection = recipes()
+    const recipeCollection = await recipes()
     return await recipeCollection
-    .find({'tag': tag})
+    .find({'tags': tag})
     .toArray()
 }
 

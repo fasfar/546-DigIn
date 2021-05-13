@@ -1,0 +1,11 @@
+<form id="tagForm" action="/tag" method='POST'>
+    <label for="followTag">Follow a tag</label>
+    <input type="text" id="followTag" name="followTag">
+    <button type="submit">Follow</button>
+</form>
+
+<div id = "tagList">
+    <ul>
+        {{#each tags}} <li>{{this}}<button id = "unfollowTag" type="submit">Unfollow</button></li> {{/each}}
+    </ul>
+</div>

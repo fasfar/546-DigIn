@@ -72,10 +72,6 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: 'You must provide recipe title' });
     return;
   }
-  if (!recipe.author) {
-    res.status(400).json({ error: 'You must provide recipe author' });
-    return;
-  }
   if (!recipe.ingredients) {
     res.status(400).json({ error: 'You must provide recipe ingredients' });
     return;

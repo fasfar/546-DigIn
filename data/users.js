@@ -3,7 +3,7 @@ const { ObjectId } = require('mongodb').ObjectId;
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 //const uuid = require('uuid/v4');
-const saltRounds = 16;
+const saltRounds = 12;
 
 const getUser = async function getUser(id){
         if(!id || !(id instanceof ObjectId))
@@ -15,6 +15,12 @@ const getUser = async function getUser(id){
         if (!user) throw 'User not found';
         return user;
     };
+
+const getAllUsers = async function getAllUsers(){
+    const userCollection = await users()
+    const userList = await userCollection.find({}).toArray()
+    return userList;
+}
 
 const getUserByUsername = async function getUserByUsername(username){
         if(!username || typeof(username) != 'string') throw 'You need to input a valid username';
@@ -321,6 +327,7 @@ module.exports = {
     addUser,
     getUser,
     getUserByUsername,
+    getAllUsers,
     addFollower,
     follow,
     addRecipe,

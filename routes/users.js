@@ -58,6 +58,17 @@ router.get('/private', async (req, res) => {
     }
 });
 
+router.get('/allUsers/', async (req, res) => {
+    if(req.session.user){
+        let allUsers = await userData.getAllUsers();
+        res.render("users/allUsers", {users: allUsers});
+    }
+    else{
+        req.session.error = "401: Unauthorized User";
+        res.redirect("/")
+    }
+});
+
 router.get('/createUser', async (req, res) => {
     if(req.session.user){
         return res.redirect('/private');
@@ -80,7 +91,7 @@ router.post('/createUser', async (req, res) => {
 router.get('/otherUser/:id', async(req, res) => {
     if(req.session.user){
         try{
-            let otherUser = getUser(req.params.id);
+            let otherUser = await getUser(req.params.id);
             return res.render('users/otherUser', {user: otherUser})
         }
         catch(e){
@@ -172,6 +183,8 @@ router.get('/editUser', async(req, res) => {
         res.redirect('/');
     }
 })
+
+
 
 router.patch('/editUser', async (req, res) => {
     if(req.session.user){

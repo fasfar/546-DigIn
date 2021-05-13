@@ -90,7 +90,7 @@ async function addRecipe(title, author, author_id, ingredients, instructions, ta
         _id : newId,
         title: title, 
         author: author, 
-        author: author_id,
+        author_id: author_id,
         ingredients: ingredients, // list of objects
         instructions: instructions,
         likes: [],

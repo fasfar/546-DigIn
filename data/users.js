@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongodb').ObjectId;
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const recipes = mongoCollections.recipes;
 //const uuid = require('uuid/v4');
 const saltRounds = 16;
 
@@ -97,7 +98,7 @@ const isFollowing = async function isFollowing(id1, id2){
     const user = await getUser(id1);
     let users_following = user.users_following;
     if(users_following.includes(id2)) return true;
-    else return false;
+    return false;
 }
 
 const addTag = async function addTag(id, tag){
@@ -194,6 +195,42 @@ const deleteRecipe = async function deleteRecipe(id, recipeId){
             };
             return this.updateUser(id, obj);
         }
+}
+
+const getTags = async function getTags(id){
+    try{
+        const user = await getUser(id);
+        return user.tags_following;
+    }catch(e){
+        throw 'issue with get tags';
+    }
+}
+
+const getFollowing = async function getFollowing(id){
+    try{
+        const user = await getUser(id);
+        return user.users_following;
+    }catch(e){
+        throw 'issue with get tags';
+    }
+}
+
+const getFeed = async function getFeed(id){
+    try{
+        let tags  = await getTags(id)
+        let following  = await getFollowing(id);
+        const recipeCollection= await recipes();
+        let recipesBy = [];
+        recipeCollection.find().forEach(function(recipe){
+            if((tags.filter(value => recipe.tags.includes(value)) != []) || following.includes(recipe.author_id)){
+                recipesBy.push(recipe);
+            }
+        });
+        return recipesBy;
+
+    }catch(e){
+        throw 'issue with get feed';
+    }
 }
 
 const updateUser = async function updateUser(id, newUser){
@@ -341,5 +378,8 @@ module.exports = {
     removeTag,
     removeUser,
     updateUser,
-    saveRecipe
+    saveRecipe,
+    getTags,
+    getFollowing, 
+    getFeed
 }

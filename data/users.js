@@ -1,14 +1,16 @@
 const bcrypt = require('bcryptjs');
-const { ObjectId } = require('bson');
+const { ObjectId } = require('mongodb').ObjectId;
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 //const uuid = require('uuid/v4');
 const saltRounds = 16;
 
 const getUser = async function getUser(id){
-        console.log(id);
-        //if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
+        if(!id || !(id instanceof ObjectId))
+            if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
+                throw 'You need to input a valid id';
         const userCollection = await users();
+        if(typeof id === 'string') id = ObjectId(id);
         const user = await userCollection.findOne({ _id: id });
         if (!user) throw 'User not found';
         return user;
@@ -24,7 +26,7 @@ const getUserByUsername = async function getUserByUsername(username){
 
 const addFollower = async function addFollower(id1, id2){
         //id1 is followed by id2
-        const user = this.getUser(id1);
+        const user = await getUser(id1);
         let followers = user.followers;
         if(followers.includes(id2)){
             throw id2 + ' already follows ' + id1;
@@ -40,7 +42,7 @@ const addFollower = async function addFollower(id1, id2){
 
 const removeFollower = async function removeFollower(id1, id2){
         //id1 is unfollowed by id2
-        const user = this.getUser(id1);
+        const user = await getUser(id1);
         let followers = user.followers;
         if(!followers.includes(id2)){
             throw id2 + ' does not follow ' + id1;
@@ -58,7 +60,7 @@ const removeFollower = async function removeFollower(id1, id2){
 
 const follow = async function follow(id1, id2){
         //id1 follows id2
-        const user = this.getUser(id1);
+        const user = await getUser(id1);
         let users_following = user.users_following;
         if(users_following.includes(id2)){
             throw id1 + ' already follows ' + id2;
@@ -74,7 +76,7 @@ const follow = async function follow(id1, id2){
 
 const unFollow = async function unFollow(id1, id2){
         //id1 unfollows id2
-        const user = this.getUser(id1);
+        const user = await getUser(id1);
         let users_following = user.users_following;
         if(!users_following.includes(id2)){
             throw id1 + ' does not follow ' + id2;
@@ -90,8 +92,16 @@ const unFollow = async function unFollow(id1, id2){
         }
     };
 
+const isFollowing = async function isFollowing(id1, id2){
+    //returns boolean for whether id1 follows id2
+    const user = await getUser(id1);
+    let users_following = user.users_following;
+    if(users_following.includes(id2)) return true;
+    else return false;
+}
+
 const addTag = async function addTag(id, tag){
-        const user = this.getUser(id);
+        const user = await getUser(id);
         let tags = user.tags_following;
         if(tags.includes(tag)){
             throw 'Already following tag ' + tag;
@@ -105,7 +115,7 @@ const addTag = async function addTag(id, tag){
     };
 
 const removeTag = async function removeTag(id, tag){
-        const user = this.getUser(id);
+        const user = await getUser(id);
         let tags = user.tags_following;
         if(!tags.includes(tag)){
             throw 'Tag not followed'
@@ -122,7 +132,7 @@ const removeTag = async function removeTag(id, tag){
 
 const saveRecipe = async function saveRecipe(id, recipeId){
         //new saved recipe
-        const user = this.getUser(id);
+        const user = await getUser(id);
         let recipes = user.recipes_saved;
         if(recipes.includes(recipeId)){
             throw 'recipe already followed';
@@ -137,7 +147,7 @@ const saveRecipe = async function saveRecipe(id, recipeId){
 
 const removeRecipe = async function removeRecipe(id, recipeId){
         //remove from saved recipes
-        const user = this.getUser(id);
+        const user = await getUser(id);
         let recipes = user.recipes_saved;
         if(!recipes.includes(recipeId)){
             throw 'recipe not followed';
@@ -154,7 +164,9 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
-        const user = this.getUser(id);
+        console.log("1");
+        const user = await getUser(id);
+        console.log(user);
         let recipes = user.own_recipes;
         if(recipes.includes(recipeId)){
             throw 'recipe already made';
@@ -163,13 +175,13 @@ const addRecipe = async function addRecipe(id, recipeId){
             let obj = {
                 own_recipes: recipes
             };
-            return this.updateUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
 const deleteRecipe = async function deleteRecipe(id, recipeId){
         //remove from own recipes
-        const user = this.getUser(id);
+        const user = await getUser(id);
         let recipes = user.own_recipes;
         if(!recipes.includes(recipeId)){
             throw 'recipe not followed';
@@ -185,8 +197,11 @@ const deleteRecipe = async function deleteRecipe(id, recipeId){
 }
 
 const updateUser = async function updateUser(id, newUser){
-        if(!id || typeof(id) != 'string') throw 'You need to input a valid id';
-        let user = getUser(id);
+        if(!id || !(id instanceof ObjectId))
+            if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
+                throw 'You need to input a valid id';
+        console.log(newUser);
+        let user = await getUser(id);
         let updatedUser = {
             name: user.name,
             username: user.username,
@@ -201,10 +216,15 @@ const updateUser = async function updateUser(id, newUser){
             num_followers: user.num_followers,
             num_following: user.num_following
         };
+        console.log(updatedUser);
         if(newUser.name && typeof(newUser.name) == 'string'){
             updatedUser.name = newUser.name;
         }
         if(newUser.username && typeof(newUser.username) == 'string'){
+            const someUser = await getUserByUsername(username);
+            if(someUser){
+                throw 'Username already taken';
+            }
             updatedUser.username = newUser.username;
         }
         if(newUser.password && typeof(newUser.password) == 'string'){
@@ -237,15 +257,16 @@ const updateUser = async function updateUser(id, newUser){
         if(newUser.num_following && typeof(num_following) == 'number'){
             updatedUser.num_following = newUser.num_following;
         }
+        console.log(updatedUser);
         const userCollection = await users();
         const updateInfo = await userCollection.updateOne(
-            { _id: id },
+            { _id: ObjectId(id) },
             { $set: updatedUser }
           );
-          if (!updateInfo.matchedCount && !updateInfo.modifiedCount)
+        if (!updateInfo.matchedCount && !updateInfo.modifiedCount)
             throw 'Update failed';
       
-          return await this.getUser(id);
+        return await getUser(id);
     }
 
 const addUser = async function addUser(name,username,password,email,profile_picture){
@@ -255,6 +276,10 @@ const addUser = async function addUser(name,username,password,email,profile_pict
         }
         if(!username || typeof(username) != 'string'){
             throw 'user must input valid username';
+        }
+        const someUser = await getUserByUsername(username);
+        if(someUser){
+            throw 'Username already taken';
         }
         if(!password || typeof(password) != 'string'){
             throw 'user must input valid password';
@@ -305,11 +330,13 @@ module.exports = {
     getUser,
     getUserByUsername,
     addFollower,
+    follow,
     addRecipe,
     addTag,
     deleteRecipe,
     removeFollower,
     unFollow,
+    isFollowing,
     removeRecipe,
     removeTag,
     removeUser,

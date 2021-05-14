@@ -17,7 +17,7 @@
                     method: 'POST', 
                     url: '/tags/'+followTag.val(),
                     success: function(data){
-                        followingTags.append(`<li>${data}<button class = "unfollowTag" type="submit">Unfollow</button></li>`)
+                        followingTags.append(`<li id = ${data}>${followTag.val()}<form action="/utags/${data}" id="follow_form_${data}" method="POST"><button type="submit" id="follow_form_${data}" >Unfollow</button></form></li>`)
                     }
 
                 })

@@ -110,8 +110,7 @@ const unFollow = async function unFollow(id1, id2){
                 return value != id2;
             });
             let new_num_following = user.num_following - 1;
-            console.log("HELLO");
-            console.log(new_num_following);
+
             let obj = {
                 users_following: users_following,
                 num_following: new_num_following
@@ -143,7 +142,7 @@ const getFollowers = async function getFollowers(id){
     let followers = user.followers;
     let usersFollowers = [];
     for(thisUser of followers){
-        userFollowers.push(await getUser(thisUser));
+        usersFollowers.push(await getUser(thisUser));
     }
     return usersFollowers;
 }
@@ -301,13 +300,10 @@ const getFeed = async function getFeed(id){
         const recipeCollection= await recipes();
         let recipesBy = new Array();
         await recipeCollection.find().forEach(function(recipe){
-            console.log(recipe.title);
             if((tags.filter(value => recipe.tags.includes(value)).length != 0) || following.includes(recipe.author_id)){
                 recipesBy.push(recipe);
-                console.log("active");
             }
         });
-        console.log(recipesBy);
         return recipesBy;
 
     }catch(e){
@@ -319,7 +315,6 @@ const updateUser = async function updateUser(id, newUser){
         if(!id || !(id instanceof ObjectId))
             if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
                 throw 'You need to input a valid id';
-        //console.log(newUser);
         let user = await getUser(id);
         let updatedUser = {
             name: user.name,
@@ -334,7 +329,6 @@ const updateUser = async function updateUser(id, newUser){
             num_followers: user.num_followers,
             num_following: user.num_following
         };
-        //console.log(updatedUser);
         if(newUser.name && typeof(newUser.name) == 'string'){
             updatedUser.name = newUser.name;
         }
@@ -367,11 +361,11 @@ const updateUser = async function updateUser(id, newUser){
             updatedUser.followers = newUser.followers;
         }
         if(newUser.num_followers != null && typeof(newUser.num_followers) == 'number'){
-            console.log("this is true")
+
             updatedUser.num_followers = newUser.num_followers;
         }
         if(newUser.num_following != null && typeof(newUser.num_following) == 'number'){
-            console.log("this is true!!")
+
             updatedUser.num_following = newUser.num_following;
         }
         const userCollection = await users();

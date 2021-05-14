@@ -110,7 +110,8 @@ router.post('/', async (req, res) => {
       const {title, ingredients, tags, instructions} = recipe;
       let author = req.session.user.username;
       let author_id = req.session.user._id;
-      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(tags));
+      let noSpaceTags = tags.replace(/\s+/g, '');
+      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(noSpaceTags));
       res.render("recipes/recipeAddedSuccessfully");
     } catch (e) {
       res.status(400).json({ error: e.toString() });

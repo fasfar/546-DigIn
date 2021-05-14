@@ -124,8 +124,8 @@ router.patch('/follow/:id', async (req, res) => {
     if(req.session.user){
         if(!await userData.isFollowing(req.session.user._id,req.params.id)){
             try{
-                userData.follow(req.session.user._id,req.params.id); //session user follows route user
-                userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
+                await userData.follow(req.session.user._id,req.params.id); //session user follows route user
+                await userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
@@ -134,8 +134,8 @@ router.patch('/follow/:id', async (req, res) => {
         }
         else{
             try{
-                userData.unFollow(req.session.user._id,req.params.id); //session user unfollows route user
-                userData.removeFollower(req.params.id,req.session.user._id); //route user unfollowed by session user
+                await userData.unFollow(req.session.user._id,req.params.id); //session user unfollows route user
+                await userData.removeFollower(req.params.id,req.session.user._id); //route user unfollowed by session user
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){

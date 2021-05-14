@@ -45,6 +45,13 @@ app.use('/recipes/delete/:id', async (req, res, next) => {
   next();
 });
 
+app.use('/follow/:id', async (req, res, next) => {
+  if(req.method === 'POST'){
+    req.method = 'PATCH';
+  }
+  next();
+})
+
 app.use(session({
     name: 'AuthCookie',
     secret: 'some secret string!',

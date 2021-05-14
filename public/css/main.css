@@ -40,9 +40,9 @@ nav li a:hover {
 a:link {
     text-decoration: none;
   }
-  .recipeList{
+  /* .recipeList{
     text-decoration: none;
-  }
+  } */
   #tag{
     display: inline;
 }
@@ -53,6 +53,9 @@ a:link {
  #logout{
      text-align: right;
  }
- #tag{
+ .tag{
      display: inline;
+ }
+ #id{
+     display:block; 
  }

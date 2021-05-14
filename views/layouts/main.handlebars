@@ -4,39 +4,55 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/public/css/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="public/css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
     <title>Dig In!</title>
 </head>
 <body>
     <header>
-        <nav>
-            <ul>
-                <li>
-                    <a href="/feed">Feed</a>
-                </li>
-                <li>
-                    <a href="/private">My Profile</a>
-                </li>
-                <li>
-                    <a href="/recipes/">Search</a>
-                </li>
-                <li>
-                    <a href="/recipes/addRecipe">New Recipe</a>
-                </li>
-                <li>
-                    <a href="/logout">Logout</a>
-                </li>
-                <li>
-                    <a href="/recipes">Recipes</a>
-                </li>
-                <li>
-                    <a href="/allUsers">Other Users</a>
-                </li>
-            </ul>
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark myNavBar">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                        <a class="nav-link navButton" aria-current="page" href="/feed" style="color: white;">Feed</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link navButton" aria-current="page" href="/private" style="color: white;">My Profile</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link navButton" aria-current="page" href="/recipes/" style="color: white;">Search</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link navButton" aria-current="page" href="/recipes/addRecipe"
+                            style="color: white;">New Recipes</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link navButton" aria-current="page" href="/allUsers"
+                            style="color: white;">Other Users</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link navButton" id="logout" aria-current="page" href="/logout" style="color: white;">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
+        
     </header>
     {{{body}}}
-     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  
+      <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
         crossorigin="anonymous"></script>
     <script src="/public/js/search.js"></script>
     <script src="/public/js/followtag.js"></script>

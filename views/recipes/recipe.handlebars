@@ -1,14 +1,14 @@
 <div>
     <h1>{{recipe.title}}</h1>
     
-    <dl>
+    <dl class="recipeInfo" class="list-group">
         <dt>Author</dt>
-        <dd>
+        <dd class="list-group-item">
             <a href="/otheruser/{{recipe.author_id}}">{{recipe.author}}</a>
         </dd>
 
         <dt>Ingredients</dt>
-        <dd>
+        <dd class="list-group-item">
             <ul>
                 {{#each recipe.ingredients}}
                     <li>{{this}}</li>
@@ -17,10 +17,10 @@
         </dd>
 
         <dt>Instructions</dt>
-        <dd>{{recipe.instructions}}</dd>
+        <dd class="list-group-item">{{recipe.instructions}}</dd>
 
         <dt>Tags</dt>
-        <dd>
+        <dd class="list-group-item">
             <ul>
                 {{#each recipe.tags}}
                     <li>{{this}}</li>
@@ -28,20 +28,20 @@
             </ul>
         </dd>
 
-        <dt>Likes</dt>
-        <dd>
+        <dt class="list-group">Likes</dt>
+        <dd class="list-group-item">
             <ul>
-                <li>
+                <li class="list-group-item">
                     {{recipe.total_likes}}
                 </li>
-                <li>
-                    <a href="/recipes/likesList/{{recipe._id}}">View users who liked this post.</a>
+                <li class="list-group-item">
+                    <a href="/recipes/likesList/{{recipe._id}}">View users who liked this post</a>
                 </li>
             </ul>
         </dd>
 
         <dt>Comments</dt>
-        <dd>
+        <dd class="list-group-item">
             <ul>
                 {{#each_upto comments 5}}
                     <li>
@@ -53,18 +53,18 @@
                     </li>
                 {{/each_upto}}
             </ul>
-            <a href="/recipes/commentsList/{{recipe._id}}">View more comments.</a>
+          <button class="btn btn-outline-primary"><a href="/recipes/commentsList/{{recipe._id}}">View more comments</a></button>
         </dd>
         
         {{!-- need to add likes and comments! --}}
     </dl>
 
-    <a href="/recipes/toggleLike/{{recipe._id}}">{{like_dislike}}</a>
-    <a href="/recipes/addComment/{{recipe._id}}">Add comment</a>
+     <button class="btn btn-outline-primary"> <a href="/recipes/toggleLike/{{recipe._id}}">{{like_dislike}}</a></button>
+    <button class="btn btn-outline-primary"><a href="/recipes/addComment/{{recipe._id}}">Add comment</a></button>
 
     {{#if own_recipe}}
-        <a href="/recipes/delete/{{recipe._id}}">Delete recipe.</a>
-        <a href="/recipes/edit/{{recipe._id}}">Edit recipe.</a>
+        <button class="btn btn-outline-primary"><a href="/recipes/delete/{{recipe._id}}">Delete recipe</a></button>
+       <button class="btn btn-outline-primary"> <a href="/recipes/edit/{{recipe._id}}">Edit recipe</a></button>
     {{/if}}
 
 </div>

@@ -37,10 +37,22 @@ nav li a {
 nav li a:hover {
     background-color: #49516f;
 } */
-.myNavBar {
-    background-color: #70799e;  
-}
-
 a:link {
     text-decoration: none;
   }
+  .recipeList{
+    text-decoration: none;
+  }
+  #tag{
+    display: inline;
+}
+ body{
+     text-align: center;
+ }
+
+ #logout{
+     text-align: right;
+ }
+ #tag{
+     display: inline;
+ }

@@ -6,7 +6,7 @@ const recipes = mongoCollections.recipes;
 const saltRounds = 16;
 
 const getUser = async function getUser(id){
-        if(!id || !(id instanceof ObjectId))
+        if(!id)
             if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
                 throw 'You need to input a valid id';
         const userCollection = await users();
@@ -31,9 +31,9 @@ const getUserByUsername = async function getUserByUsername(username){
     };
 
 const addFollower = async function addFollower(id1, id2){
-        if(!id1 || !(id1 instanceof ObjectId))
+        if(!id1)
             throw 'id1 is invalid';
-        if(!id2 || !(id2 instanceof ObjectId))
+        if(!id2)
             throw 'id2 is invalid';
         //id1 is followed by id2
         const user = await getUser(id1);
@@ -53,9 +53,9 @@ const addFollower = async function addFollower(id1, id2){
 
 const removeFollower = async function removeFollower(id1, id2){
         //id1 is unfollowed by id2
-        if(!id1 || !(id1 instanceof ObjectId))
+        if(!id1)
             throw 'id1 is invalid';
-        if(!id2 || !(id2 instanceof ObjectId))
+        if(!id2)
             throw 'id2 is invalid';
         const user = await getUser(id1);
         let followers = user.followers;
@@ -76,9 +76,9 @@ const removeFollower = async function removeFollower(id1, id2){
 
 const follow = async function follow(id1, id2){
         //id1 follows id2
-        if(!id1 || !(id1 instanceof ObjectId))
+        if(!id1)
             throw 'id1 is invalid';
-        if(!id2 || !(id2 instanceof ObjectId))
+        if(!id2)
             throw 'id2 is invalid';
         const user = await getUser(id1);
         let users_following = user.users_following;
@@ -97,9 +97,9 @@ const follow = async function follow(id1, id2){
 
 const unFollow = async function unFollow(id1, id2){
         //id1 unfollows id2
-        if(!id1 || !(id1 instanceof ObjectId))
+        if(!id1)
             throw 'id1 is invalid';
-        if(!id2 || !(id2 instanceof ObjectId))
+        if(!id2)
             throw 'id2 is invalid';
         const user = await getUser(id1);
         let users_following = user.users_following;
@@ -141,15 +141,15 @@ const getUsersFollowing = async function getUsersFollowing(id){
 const getFollowers = async function getFollowers(id){
     const user = await getUser(id);
     let followers = user.followers;
-    let userFollowers = [];
+    let usersFollowers = [];
     for(thisUser of followers){
         userFollowers.push(await getUser(thisUser));
     }
-    return usersFollowing;
+    return usersFollowers;
 }
 
 const addTag = async function addTag(id, tag){
-        if(!id || !(id instanceof ObjectId)){
+        if(!id){
             throw 'user must be input';
         }
         if(!tag || typeof(tag) != 'string'){
@@ -169,7 +169,7 @@ const addTag = async function addTag(id, tag){
     };
 
 const removeTag = async function removeTag(id, tag){
-    if(!id || !(id instanceof ObjectId)){
+    if(!id){
         throw 'user must be input';
     }
     if(!tag || typeof(tag) != 'string'){
@@ -192,9 +192,9 @@ const removeTag = async function removeTag(id, tag){
 
 const saveRecipe = async function saveRecipe(id, recipeId){
         //new saved recipe
-        if(!id || !(id instanceof ObjectId))
+        if(!id)
             throw 'id is invalid';
-        if(!recipeId || !(recipeId instanceof ObjectId))
+        if(!recipeId)
             throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.recipes_saved;
@@ -211,9 +211,9 @@ const saveRecipe = async function saveRecipe(id, recipeId){
 
 const removeRecipe = async function removeRecipe(id, recipeId){
         //remove from saved recipes
-        if(!id || !(id instanceof ObjectId))
+        if(!id)
             throw 'id is invalid';
-        if(!recipeId || !(recipeId instanceof ObjectId))
+        if(!recipeId)
             throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.recipes_saved;
@@ -232,9 +232,9 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
-        if(!id || !(id instanceof ObjectId))
+        if(!id)
             throw 'id is invalid';
-        if(!recipeId || !(recipeId instanceof ObjectId))
+        if(!recipeId)
             throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.own_recipes;
@@ -251,9 +251,9 @@ const addRecipe = async function addRecipe(id, recipeId){
 
 const deleteRecipe = async function deleteRecipe(id, recipeId){
         //remove from own recipes
-        if(!id || !(id instanceof ObjectId))
+        if(!id)
             throw 'id is invalid';
-        if(!recipeId || !(recipeId instanceof ObjectId))
+        if(!recipeId)
             throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.own_recipes;
@@ -271,7 +271,7 @@ const deleteRecipe = async function deleteRecipe(id, recipeId){
 }
 
 const getTags = async function getTags(id){
-    if(!id || !(id instanceof ObjectId))
+    if(!id)
             throw 'id is invalid';
     try{
         const user = await getUser(id);
@@ -282,7 +282,7 @@ const getTags = async function getTags(id){
 }
 
 const getFollowing = async function getFollowing(id){
-    if(!id || !(id instanceof ObjectId))
+    if(!id)
             throw 'id is invalid';
     try{
         const user = await getUser(id);
@@ -293,7 +293,7 @@ const getFollowing = async function getFollowing(id){
 }
 
 const getFeed = async function getFeed(id){
-    if(!id || !(id instanceof ObjectId))
+    if(!id)
             throw 'id is invalid';
     try{
         let tags  = await getTags(id)

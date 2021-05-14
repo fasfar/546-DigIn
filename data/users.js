@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongodb').ObjectId;
+const recipeData = require('./recipes.js');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const recipes = mongoCollections.recipes;
@@ -333,9 +334,14 @@ const updateUser = async function updateUser(id, newUser){
             updatedUser.name = newUser.name;
         }
         if(newUser.username && typeof(newUser.username) == 'string'){
-            const someUser = await getUserByUsername(username);
+            const someUser = await getUserByUsername(newUser.username);
             if(someUser){
                 throw 'Username already taken';
+            }
+            let rlist = await recipeData.getRecipeByAuthor(user.username);
+            let i;
+            for(i = 0; i< rlist.length; i++){
+                await recipeData.updatedAuthor(rlist[i]._id, newUser.username);
             }
             updatedUser.username = newUser.username;
         }

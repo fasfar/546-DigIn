@@ -4,7 +4,39 @@
     <a href="/following" class="followLink">{{user.num_following}} Following</a>
     <a href="/tags" class="tagLink"> Tags </a>
     <div>
-        <ul id="recipeList">{{#each recipes}} <li><a href="/recipes/id/{{this._id}}">{{this.title}}</a></li> {{/each}}</ul>
+        <ul id="recipeList">
+            {{#each recipes}} 
+                <li>
+                    <a href="/recipes/id/{{this._id}}">{{this.title}}</a>
+                    <dl>
+                        <dt>
+                            Tags
+                        </dt>
+                        <dd>
+                            <ul>
+                                {{#each this.tags}}
+                                    <li>{{this}}</li>
+                                {{/each}}
+                            </ul>
+                        </dd>
+                        <dt>
+                            Ingredients
+                        </dt>
+                        <dd>
+                            {{#each this.ingredients}}
+                                <li>{{this}}</li>
+                            {{/each}}
+                        </dd>
+                        <dt>
+                            Instructions
+                        </dt>
+                        <dd>
+                            this.instructions
+                        </dd>
+                    </dl>
+                </li> 
+            {{/each}}
+        </ul>
     </div>
     
     <a href="/logout">Logout</a>

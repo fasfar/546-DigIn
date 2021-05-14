@@ -128,6 +128,26 @@ const isFollowing = async function isFollowing(id1, id2){
     return false;
 }
 
+const getUsersFollowing = async function getUsersFollowing(id){
+    const user = await getUser(id);
+    let users_following = user.users_following;
+    let usersFollowing = [];
+    for(thisUser of users_following){
+        usersFollowing.push(await getUser(thisUser));
+    }
+    return usersFollowing;
+}
+
+const getFollowers = async function getFollowers(id){
+    const user = await getUser(id);
+    let followers = user.followers;
+    let userFollowers = [];
+    for(thisUser of followers){
+        userFollowers.push(await getUser(thisUser));
+    }
+    return usersFollowing;
+}
+
 const addTag = async function addTag(id, tag){
         if(!id || !(id instanceof ObjectId)){
             throw 'user must be input';
@@ -428,6 +448,8 @@ module.exports = {
     removeFollower,
     unFollow,
     isFollowing,
+    getUsersFollowing,
+    getFollowers,
     removeRecipe,
     removeTag,
     removeUser,

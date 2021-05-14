@@ -1,0 +1,12 @@
+<div>
+    <h1>Users who liked this recipe:</h1>
+
+    <ul>
+        {{#each users}}
+            <li>
+                <a href="/otheruser/{{this.user_id}}">{{this.user}}</a>
+            </li>
+        {{/each}}
+     </ul>
+
+</div>

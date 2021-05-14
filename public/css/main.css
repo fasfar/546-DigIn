@@ -1,16 +1,24 @@
- #editProfile {
-     color: white
- }
+body{
+    text-align: center;
+}
 a:link {
     text-decoration: none;
   }
+.recipeInfo ul{
+    text-align: center;
+}
+ #editProfile {
+     color: white
+ }
+ li{
+     list-style-type: none;
+ }
+
+
  
   #tag{
     display: inline;
 }
- body{
-     text-align: center;
- }
 
  #logout{
      text-align: right;

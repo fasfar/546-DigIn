@@ -152,10 +152,35 @@ router.patch('/follow/:id', async (req, res) => {
     }
 });
 
+router.get('/followers', async (req, res) => {
+    if(req.session.user){
+        let userFollowers = await userData.getFollowers(req.session.user._id);
+        console.log(userFollowers)
+        res.render('users/followers', {followers: userFollowers});
+    }
+    else{
+        req.session.error = "401: Unauthorized User"
+        res.redirect('/');
+    }
+});
+
+router.get('/following', async (req, res) => {
+    if(req.session.user){
+        let usersFollowing = await userData.getUsersFollowing(req.session.user._id);
+        res.render('users/following', {following: usersFollowing});
+    }
+    else{
+        req.session.error = "401: Unauthorized User"
+        res.redirect('/');
+    }
+});
+
 router.patch('/unfollow/:id', async (req, res) => {
     //the :id request parameter corresponds to the unfollowed's id. 
     //The unfollowing user's id obtained from session cookie
     if(req.session.user){
+        let followers = await userData.getUsersFollowing(req.session.user._id);
+        res.render('users/followers', {followers: followers});
     }
     else{
         req.session.error = "401: Unauthorized User"

@@ -298,6 +298,26 @@ router.post('/tags/:tag', async (req, res) =>{
     }
 });
 
+router.post('/utags/:tag', async (req, res) =>{
+    if(req.session.user){
+        try{
+            console.log(req.params.tag);
+            let user = req.session.user;
+            let tag = req.params.tag;
+            let deletedTag = await userData.removeTag(user._id, tag)
+            res.send(tag);
+
+        }
+        catch (e){
+            console.log(e.toString());
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User; cannot update User info"
+        res.redirect('/');
+    }
+});
+
 module.exports = router;
 
 /*

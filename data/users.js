@@ -31,6 +31,10 @@ const getUserByUsername = async function getUserByUsername(username){
     };
 
 const addFollower = async function addFollower(id1, id2){
+        if(!id1 || !(id1 instanceof ObjectId))
+            throw 'id1 is invalid';
+        if(!id2 || !(id2 instanceof ObjectId))
+            throw 'id2 is invalid';
         //id1 is followed by id2
         const user = await getUser(id1);
         let followers = user.followers;
@@ -49,6 +53,10 @@ const addFollower = async function addFollower(id1, id2){
 
 const removeFollower = async function removeFollower(id1, id2){
         //id1 is unfollowed by id2
+        if(!id1 || !(id1 instanceof ObjectId))
+            throw 'id1 is invalid';
+        if(!id2 || !(id2 instanceof ObjectId))
+            throw 'id2 is invalid';
         const user = await getUser(id1);
         let followers = user.followers;
         if(!followers.includes(id2)){
@@ -68,6 +76,10 @@ const removeFollower = async function removeFollower(id1, id2){
 
 const follow = async function follow(id1, id2){
         //id1 follows id2
+        if(!id1 || !(id1 instanceof ObjectId))
+            throw 'id1 is invalid';
+        if(!id2 || !(id2 instanceof ObjectId))
+            throw 'id2 is invalid';
         const user = await getUser(id1);
         let users_following = user.users_following;
         if(users_following.includes(id2)){
@@ -85,6 +97,10 @@ const follow = async function follow(id1, id2){
 
 const unFollow = async function unFollow(id1, id2){
         //id1 unfollows id2
+        if(!id1 || !(id1 instanceof ObjectId))
+            throw 'id1 is invalid';
+        if(!id2 || !(id2 instanceof ObjectId))
+            throw 'id2 is invalid';
         const user = await getUser(id1);
         let users_following = user.users_following;
         if(!users_following.includes(id2)){
@@ -133,10 +149,10 @@ const getFollowers = async function getFollowers(id){
 }
 
 const addTag = async function addTag(id, tag){
-        if(!id){
+        if(!id || !(id instanceof ObjectId)){
             throw 'user must be input';
         }
-        if(!tag){
+        if(!tag || typeof(tag) != 'string'){
             throw 'tag must be input';
         }
         const user = await getUser(id);
@@ -153,10 +169,10 @@ const addTag = async function addTag(id, tag){
     };
 
 const removeTag = async function removeTag(id, tag){
-    if(!id){
+    if(!id || !(id instanceof ObjectId)){
         throw 'user must be input';
     }
-    if(!tag){
+    if(!tag || typeof(tag) != 'string'){
         throw 'tag must be input';
     }
         const user = await getUser(id);
@@ -176,6 +192,10 @@ const removeTag = async function removeTag(id, tag){
 
 const saveRecipe = async function saveRecipe(id, recipeId){
         //new saved recipe
+        if(!id || !(id instanceof ObjectId))
+            throw 'id is invalid';
+        if(!recipeId || !(recipeId instanceof ObjectId))
+            throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.recipes_saved;
         if(recipes.includes(recipeId)){
@@ -191,6 +211,10 @@ const saveRecipe = async function saveRecipe(id, recipeId){
 
 const removeRecipe = async function removeRecipe(id, recipeId){
         //remove from saved recipes
+        if(!id || !(id instanceof ObjectId))
+            throw 'id is invalid';
+        if(!recipeId || !(recipeId instanceof ObjectId))
+            throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.recipes_saved;
         if(!recipes.includes(recipeId)){
@@ -208,6 +232,10 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
+        if(!id || !(id instanceof ObjectId))
+            throw 'id is invalid';
+        if(!recipeId || !(recipeId instanceof ObjectId))
+            throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.own_recipes;
         if(recipes.includes(recipeId)){
@@ -223,6 +251,10 @@ const addRecipe = async function addRecipe(id, recipeId){
 
 const deleteRecipe = async function deleteRecipe(id, recipeId){
         //remove from own recipes
+        if(!id || !(id instanceof ObjectId))
+            throw 'id is invalid';
+        if(!recipeId || !(recipeId instanceof ObjectId))
+            throw 'recipeId is invalid';
         const user = await getUser(id);
         let recipes = user.own_recipes;
         if(!recipes.includes(recipeId)){
@@ -239,6 +271,8 @@ const deleteRecipe = async function deleteRecipe(id, recipeId){
 }
 
 const getTags = async function getTags(id){
+    if(!id || !(id instanceof ObjectId))
+            throw 'id is invalid';
     try{
         const user = await getUser(id);
         return user.tags_following;
@@ -248,6 +282,8 @@ const getTags = async function getTags(id){
 }
 
 const getFollowing = async function getFollowing(id){
+    if(!id || !(id instanceof ObjectId))
+            throw 'id is invalid';
     try{
         const user = await getUser(id);
         return user.users_following;
@@ -257,6 +293,8 @@ const getFollowing = async function getFollowing(id){
 }
 
 const getFeed = async function getFeed(id){
+    if(!id || !(id instanceof ObjectId))
+            throw 'id is invalid';
     try{
         let tags  = await getTags(id)
         let following  = await getFollowing(id);
@@ -288,7 +326,6 @@ const updateUser = async function updateUser(id, newUser){
             username: user.username,
             password: user.password,
             email: user.email,
-            profile_picture: user.profile_picture,
             users_following: user.users_following,
             tags_following: user.tags_following,
             recipes_saved: user.recipes_saved,
@@ -314,9 +351,6 @@ const updateUser = async function updateUser(id, newUser){
         if(newUser.email && typeof(newUser.email) == 'string'){
             updatedUser.email = newUser.email;
         }
-        if(newUser.profile_picture && typeof(newUser.profile_picture) == 'string'){
-            updatedUser.name = newUser.name;
-        }
         if(newUser.users_following && Array.isArray(newUser.users_following)){
             updatedUser.users_following = newUser.users_following;
         }
@@ -340,12 +374,6 @@ const updateUser = async function updateUser(id, newUser){
             console.log("this is true!!")
             updatedUser.num_following = newUser.num_following;
         }
-        console.log("newUser")
-        console.log(newUser.num_followers);
-        console.log(newUser.num_following);
-        console.log("updatedUser");
-        console.log(updatedUser.num_followers);
-        console.log(updatedUser.num_following);
         const userCollection = await users();
         const updateInfo = await userCollection.updateOne(
             { _id: ObjectId(id) },
@@ -357,9 +385,8 @@ const updateUser = async function updateUser(id, newUser){
         return await getUser(id);
     }
 
-const addUser = async function addUser(name,username,password,email,profile_picture){
+const addUser = async function addUser(name,username,password,email){
         const userCollection = await users();
-        console.log("Hello");
         if(!name || typeof(name) != 'string'){
             throw 'user must input valid name';
         }
@@ -376,17 +403,12 @@ const addUser = async function addUser(name,username,password,email,profile_pict
         if(!email || typeof(email) != 'string'){
             throw 'user must input valid name';
         }
-        if(!profile_picture || typeof(profile_picture) != 'string'){
-            throw 'user must input valid profile_picture';
-            //perhaps we should change this to set it to a default profile picture if one isnt submitted
-        }
         let newUser = {
             _id: new ObjectId(),
             name: name,
             username: username,
             password: await bcrypt.hash(password, saltRounds),
             email: email,
-            profile_picture: profile_picture,
             tags_following: [],
             recipes_saved: [],
             own_recipes: [],

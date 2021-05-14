@@ -6,9 +6,6 @@
 
 <div id = "tagList">
     <ul id="followingTags">
-        {{#each tags}} <form action="/tags/{{this}}" method="POST">
-        <li>{{this}}<button id = "unfollowTag" type="submit">Unfollow</button></li>
-        </form>
-         {{/each}}
+        {{#each tags}} <li id = {{this}}>{{this}}<button class = "unfollowTag" type="submit">Unfollow</button></li> {{/each}}
     </ul>
 </div>

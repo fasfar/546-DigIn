@@ -1,23 +1,24 @@
 (function($){
     //AJAX calls to follow tags
-    //tag input
-    let followTag = $("#followTag")
     //the form
-    let tagForm = $("#tagForm")
-    //the ul we want to add to
+    let tagForm = $(".utagForm")
+
+    let unfollowTag = tagForm.input;
+    //the ul we want to remove from
     let followingTags = $("#followingTags")
 
     $(document).ready(function(){
         tagForm.submit(function(event){
             event.preventDefault();
-            if(followTag.val().trim().length === 0){
+            if(unfollowTag.val().trim().length === 0){
                 alert("search term must be non-empty")
             }else{
                 $.ajax({                //this is getting the searchTerm from the searchForm
                     method: 'POST', 
-                    url: '/tags/'+followTag.val(),
+                    url: '/utags/'+unfollowTag.val(),
                     success: function(data){
-                        followingTags.append(`<li>${data}<button class = "unfollowTag" type="submit">Unfollow</button></li>`)
+                        element = $('#'+data)
+                        followingTags.removeChild(element);
                     }
 
                 })

@@ -235,12 +235,15 @@ const getFeed = async function getFeed(id){
         let tags  = await getTags(id)
         let following  = await getFollowing(id);
         const recipeCollection= await recipes();
-        let recipesBy = [];
-        recipeCollection.find().forEach(function(recipe){
-            if((tags.filter(value => recipe.tags.includes(value)) != []) || following.includes(recipe.author_id)){
+        let recipesBy = new Array();
+        await recipeCollection.find().forEach(function(recipe){
+            console.log(recipe.title);
+            if((tags.filter(value => recipe.tags.includes(value)).length != 0) || following.includes(recipe.author_id)){
                 recipesBy.push(recipe);
+                console.log("active");
             }
         });
+        console.log(recipesBy);
         return recipesBy;
 
     }catch(e){

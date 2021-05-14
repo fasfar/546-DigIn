@@ -6,7 +6,7 @@
         - return recipe object with fields as appropriate strings
     * updateRecipe(id, newRecipe, updateAll): update the respective parameter(s) according to the provided object. All parameters must be provided if updateAll == true.
         - 
-    * addRecipe(name,author, ingredients, instructions, tags, pictures)
+    * addRecipe(name,author, ingredients, instructions, tags)
         - we can error check the instructions input string to make sure it follows a specific format using regex that we can redesign later on
         - Initialize likes/total likes to empty array/0
     * removeRecipe(id)
@@ -22,7 +22,7 @@ const userData = require('./users.js')
 //const { recipes } = require("../config/mongoCollections");
 
 //get all recipes
-async function addRecipe(title, author, author_id, ingredients, instructions, tags, picture){ //leaving picture out for now
+async function addRecipe(title, author, author_id, ingredients, instructions, tags){ 
     if(!title){
         throw 'Please provide a recipe title'
     }
@@ -54,12 +54,6 @@ async function addRecipe(title, author, author_id, ingredients, instructions, ta
     if(typeof instructions != 'string'){
         throw 'Please provide instructions using words(strings)'
     }
-    if(!picture){
-        throw 'You must provide a photo'
-    }
-    if(typeof picture != 'string'){
-        throw 'Please provide a file path to your photo'
-    }
     const recipeCollection = await recipes()
     
     let newRecipe = {
@@ -71,8 +65,7 @@ async function addRecipe(title, author, author_id, ingredients, instructions, ta
         likes: [],
         total_likes: 0,
         tags: tags, 
-        comments: [],
-        pictures: picture
+        comments: []
     }
     
     const insertRecipe = await recipeCollection.insertOne(newRecipe)
@@ -96,8 +89,7 @@ async function addRecipe(title, author, author_id, ingredients, instructions, ta
         likes: [],
         total_likes: 0,
         tags: tags, 
-        comments: [],
-        pictures: picture
+        comments: []
     };
     
 
@@ -122,8 +114,7 @@ async function getAllRecipes(){
             likes: recipe.likes,
             total_likes: recipe.total_likes,
             tags: recipe.tags, 
-            comments: recipe.comments,
-            pictures: recipe.pictures
+            comments: recipe.comments
         };
         recipesToReturn.push(x);
     }
@@ -172,9 +163,13 @@ async function getRecipeByTag(tag){
         throw 'tag is not in string format.'
     }
     const recipeCollection = await recipes()
-    return await recipeCollection
-    .find({'tags': tag})
-    .toArray()
+    let taggedRecipes = new Array();
+    await recipeCollection.find().forEach(function(recipe){
+        if(recipe.tags.includes(tag)){
+            taggedRecipes.push(recipe);
+        }
+    });
+    return taggedRecipes;
 }
 
 async function getRecipeByAuthor(author){
@@ -261,8 +256,6 @@ async function updatedAuthor(id, uAuthor){
     }
     const recipeCollection = await recipes();
     let newRecipe = await recipeCollection.updateOne({_id: obj}, {$set: {author : uAuthor}});
-    console.log(newRecipe);
-    console.log(await module.exports.getRecipeById(id));
     return await module.exports.getRecipeById(id);
 }
 
@@ -317,31 +310,7 @@ async function updatedInstructions(id, updatedInstructions){
     return await module.exports.getRecipeById(id);
 }
 
-async function updatedPicture(id, updatedPicture){
-    if(!id){
-        throw 'You must provide an id'
-    }
-    if (!id.trim()){
-        throw 'Id is an empty string';
-    } 
-    let obj = ObjectId(id)
-    //var objId = require('mongodb').ObjectID
-    // if(!objId.isValid(obj)){
-    //     throw ` ${objId} is not a proper mongo id`
-    // }
-    if(!updatedPicture){
-        throw 'Provide a picture file path'
-    }
-    if(typeof updatedPicture !='string'){
-        throw 'picture is not a file path'
-    }
-    const recipeCollection = await recipes();
-    await recipeCollection.updateOne({_id: obj}, {$set: { pictures: updatedPicture}});
-    return await module.exports.getRecipeById(id);
-
-}
-
-async function updateRecipe(id, uTitle, uIngredients, uInstructions, uPicture){
+async function updateRecipe(id, uTitle, uIngredients, uInstructions){
     let recipe = this.getRecipeById(id); 
     
     if(uTitle && uTitle != recipe.title){
@@ -354,10 +323,6 @@ async function updateRecipe(id, uTitle, uIngredients, uInstructions, uPicture){
     
     if(uInstructions && uInstructions!= recipe.instructions){
         await updatedInstructions(id, uInstructions)
-    }
-   
-    if(uPicture && uPicture != recipe.pictures){
-        await updatedPicture(id, uPicture)
     }
 
     return await module.exports.getRecipeById(id);
@@ -410,7 +375,6 @@ module.exports = {
     updatedAuthor,
     updatedIngredients, 
     updatedInstructions,
-    updatedPicture,
     updatedTitle,
     removeRecipe
 };

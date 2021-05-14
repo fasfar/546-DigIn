@@ -5,7 +5,13 @@
 </form>
 
 <div id = "tagList">
-    <ul  class="list-group list-group-flush" id="followingTags">
-        {{#each tags}} <li class="tag">{{this}}<button  class="btn btn-danger btn-sm" id = "unfollowTag" type="submit">Unfollow</button></li> {{/each}}
+
+    <ul id="followingTags" class="list-group list-group-flush">
+        {{#each tags}} <li class="tag" id = {{this}}>{{this}}
+            <form action="/utags/{{this}}" id="follow_form_{{this}}" method="POST">
+                <button type="submit"  class="btn btn-danger btn-sm" id="follow_form_{{this}}" >Unfollow</button>
+            </form>
+        </li> {{/each}}
+
     </ul>
 </div>

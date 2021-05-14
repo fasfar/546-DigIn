@@ -4,7 +4,41 @@
     <button type="button" class="btn btn-outline-primary btn-sm"><a href="/following" class="followLink">{{user.num_following}} Following</a></button>
      <button type="button" class="btn btn-outline-primary btn-sm "><a href="/tags" class="tagLink"> Tags </a></button>
     <div>
-        <ul id="recipeList">{{#each recipes}} <li class="list-group-item list-group-item-action list-group-item-primary"><a href="/recipes/id/{{this._id}}">{{this.title}}</a></li> {{/each}}</ul>
+
+        <ul id="recipeList">
+            {{#each recipes}} 
+                <li class="list-group-item list-group-item-action list-group-item-primary">
+                    <a href="/recipes/id/{{this._id}}">{{this.title}}</a>
+                    <dl>
+                        <dt>
+                            Tags
+                        </dt>
+                        <dd>
+                            <ul>
+                                {{#each this.tags}}
+                                    <li>{{this}}</li>
+                                {{/each}}
+                            </ul>
+                        </dd>
+                        <dt>
+                            Ingredients
+                        </dt>
+                        <dd>
+                            {{#each this.ingredients}}
+                                <li>{{this}}</li>
+                            {{/each}}
+                        </dd>
+                        <dt>
+                            Instructions
+                        </dt>
+                        <dd>
+                           {{ this.instructions}}
+                        </dd>
+                    </dl>
+                </li> 
+            {{/each}}
+        </ul>
+
     </div>
     
     <button class="btn btn-secondary btn-outline-dark" <a href="/logout">Logout</a></button>

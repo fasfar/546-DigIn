@@ -105,16 +105,13 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: 'You must provide recipe instructions' });
     return;
   }
-  if (!recipe.pictures) {
-    res.status(400).json({ error: 'You must provide recipe picture' });
-    return;
-  }
   if(req.session.user){
     try {
-      const {title, ingredients, tags, instructions, pictures} = recipe;
+      const {title, ingredients, tags, instructions} = recipe;
       let author = req.session.user.username;
       let author_id = req.session.user._id;
-      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(tags), pictures);
+      let noSpaceTags = tags.replace(/\s+/g, '');
+      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(noSpaceTags));
       res.render("recipes/recipeAddedSuccessfully");
     } catch (e) {
       res.status(400).json({ error: e.toString() });
@@ -128,7 +125,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const updatedData = req.body;
-  if (!updatedData.title || !updatedData.author || !updatedData.ingredients || !updatedData.tags || !updatedData.instructions || !updatedData.pictures) {
+  if (!updatedData.title || !updatedData.author || !updatedData.ingredients || !updatedData.tags || !updatedData.instructions) {
     res.status(400).json({ error: 'You must supply all fields' });
     return;
   }
@@ -150,7 +147,6 @@ router.put('/:id', async (req, res) => {
 router.get('/addComment/:id', async (req, res) => {
   let commentInfo = req.params;
   let recipe_id = commentInfo.id;
-  console.log(recipe_id);
   let recipe = await recipeData.getRecipeById(recipe_id);
   if(req.session.user){
     try {
@@ -307,13 +303,6 @@ router.patch('/edit/:id', async (req, res) => {
         res.status(400).json({ error: 'Issue with instructions field. Try again.' });
       }
     }
-    if (requestBody.pictures && requestBody.pictures !== oldRecipe.pictures){
-      try{
-        updatedObject.pictures = requestBody.pictures;
-      } catch(e){
-        res.status(400).json({ error: 'Issue with pictures field. Try again.' });
-      }
-    }
   } catch (e) {
     res.status(404).json({ error: 'Recipe not found' });
     return;
@@ -324,8 +313,7 @@ router.patch('/edit/:id', async (req, res) => {
         req.params.id,
         updatedObject.title,
         updatedObject.ingredients,
-        updatedObject.instructions,
-        updatedObject.pictures
+        updatedObject.instructions
       );
       res.render("recipes/recipe", {recipe: updatedRecipe});
       
@@ -363,7 +351,6 @@ router.post('/searchByTag/:searchTerm', async(req, res)=>{   //this route is cal
     const recipeTag = req.params.searchTerm
   
     const recipes = await recipeData.getRecipeByTag(recipeTag);
-    console.log(recipes)
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
   }
   catch(e){
@@ -375,8 +362,7 @@ router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route
   try{
     const recipeName = req.params.searchTerm
     const recipes = await recipeData.getRecipeByTitle(recipeName);
-    console.log(recipeName)
-    console.log(recipes)
+
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
   }
   catch(e){
@@ -387,9 +373,7 @@ router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route
 router.post('/searchByAuthor/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
   try{
     const author = req.params.searchTerm
-    console.log(author)
     const recipes = await recipeData.getRecipeByAuthor(author);
-    console.log(recipes)
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
   }
   catch(e){

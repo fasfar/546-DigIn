@@ -19,9 +19,6 @@
         <dt>Instructions</dt>
         <dd class="list-group-item">{{recipe.instructions}}</dd>
 
-        <dt>Pictures</dt>
-        <dd class="list-group-item">{{recipe.pictures}}</dd>
-
         <dt>Tags</dt>
         <dd class="list-group-item">
             <ul>
@@ -49,13 +46,11 @@
                 {{#each_upto comments 5}}
                     <li>
                         <a href="/otheruser/{{this.user_id}}">{{this.user}}</a>
-                    </li>
-                    <li>{{this.comment}}</li>
-                    {{#if this.own_comment}}
-                        <li>
+                        <p>{{this.comment}}</p>
+                        {{#if this.own_comment}}
                             <a href="/recipes/deleteComment/{{this._id}}">Delete comment.</a>
-                        </li>
-                    {{/if}}
+                        {{/if}}
+                    </li>
                 {{/each_upto}}
             </ul>
           <button class="btn btn-outline-primary"><a href="/recipes/commentsList/{{recipe._id}}">View more comments</a></button>

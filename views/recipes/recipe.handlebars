@@ -46,13 +46,11 @@
                 {{#each_upto comments 5}}
                     <li>
                         <a href="/otheruser/{{this.user_id}}">{{this.user}}</a>
-                    </li>
-                    <li>{{this.comment}}</li>
-                    {{#if this.own_comment}}
-                        <li>
+                        <p>{{this.comment}}</p>
+                        {{#if this.own_comment}}
                             <a href="/recipes/deleteComment/{{this._id}}">Delete comment.</a>
-                        </li>
-                    {{/if}}
+                        {{/if}}
+                    </li>
                 {{/each_upto}}
             </ul>
             <a href="/recipes/commentsList/{{recipe._id}}">View more comments.</a>

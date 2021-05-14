@@ -9,6 +9,18 @@ app.use('/public', static);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+var hbs = exphbs.create({});
+
+hbs.handlebars.registerHelper('each_upto', function(ary, max, options) {
+  if(!ary || ary.length == 0)
+      return options.inverse(this);
+
+  var result = [ ];
+  for(var i = 0; i < max && i < ary.length; ++i)
+      result.push(options.fn(ary[i]));
+  return result.join('');
+});
+
 const handlebarsInstance = exphbs.create({
   defaultLayout: 'main',
   // Specify helpers which are only registered on this instance.
@@ -24,6 +36,7 @@ const handlebarsInstance = exphbs.create({
 });
 
 app.engine('handlebars', handlebarsInstance.engine);
+
 app.set('view engine', 'handlebars');
 
 
@@ -44,6 +57,13 @@ app.use('/recipes/delete/:id', async (req, res, next) => {
   }
   next();
 });
+
+app.use('/follow/:id', async (req, res, next) => {
+  if(req.method === 'POST'){
+    req.method = 'PATCH';
+  }
+  next();
+})
 
 app.use(session({
     name: 'AuthCookie',

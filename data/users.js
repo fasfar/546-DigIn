@@ -3,7 +3,6 @@ const { ObjectId } = require('mongodb').ObjectId;
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const recipes = mongoCollections.recipes;
-//const uuid = require('uuid/v4');
 const saltRounds = 16;
 
 const getUser = async function getUser(id){
@@ -17,11 +16,17 @@ const getUser = async function getUser(id){
         return user;
     };
 
+const getAllUsers = async function getAllUsers(){
+    const userCollection = await users()
+    const userList = await userCollection.find({}).toArray()
+    return userList;
+}
+
 const getUserByUsername = async function getUserByUsername(username){
         if(!username || typeof(username) != 'string') throw 'You need to input a valid username';
         const userCollection = await users();
         const user = await userCollection.findOne({ username: username });
-        if (!user) throw 'User not found';
+        if (!user) return false;
         return user;
     };
 
@@ -32,10 +37,13 @@ const addFollower = async function addFollower(id1, id2){
         if(followers.includes(id2)){
             throw id2 + ' already follows ' + id1;
         }else{
+            let new_num_following = user.num_followers + 1;
+            console.log("HELLO");
+            console.log(new_num_following);
             followers.push(id2);
             let obj = {
                 followers: followers,
-                num_followers: user.num_followers + 1
+                num_followers: new_num_following
             };
             return updateUser(id1, obj);
         }
@@ -51,9 +59,12 @@ const removeFollower = async function removeFollower(id1, id2){
             followers = followers.filter(function(value, index, arr){
                 return value != id2;
             });
+            let new_num_followers = user.num_followers - 1;
+            console.log("HELLO");
+            console.log(new_num_followers);
             let obj = {
                 followers: followers,
-                num_followers: user.num_followers - 1
+                num_followers: new_num_followers
             };
             return updateUser(id1, obj);
         }
@@ -67,9 +78,12 @@ const follow = async function follow(id1, id2){
             throw id1 + ' already follows ' + id2;
         }else{
             users_following.push(id2);
+            let new_num_following = user.num_following + 1;
+            console.log("HELLO");
+            console.log(new_num_following);
             let obj = {
                 users_following: users_following,
-                num_following: user.num_following+1
+                num_following: new_num_following
             };
             return updateUser(id1, obj);
         }
@@ -79,15 +93,19 @@ const unFollow = async function unFollow(id1, id2){
         //id1 unfollows id2
         const user = await getUser(id1);
         let users_following = user.users_following;
+        console.log(users_following);
         if(!users_following.includes(id2)){
             throw id1 + ' does not follow ' + id2;
         }else{
             users_following = users_following.filter(function(value, index, arr){
                 return value != id2;
             });
+            let new_num_following = user.num_following - 1;
+            console.log("HELLO");
+            console.log(new_num_following);
             let obj = {
                 users_following: users_following,
-                num_following: user.num_following-1
+                num_following: new_num_following
             };
             return updateUser(id1, obj);
         }
@@ -102,6 +120,12 @@ const isFollowing = async function isFollowing(id1, id2){
 }
 
 const addTag = async function addTag(id, tag){
+        if(!id){
+            throw 'user must be input';
+        }
+        if(!tag){
+            throw 'tag must be input';
+        }
         const user = await getUser(id);
         let tags = user.tags_following;
         if(tags.includes(tag)){
@@ -111,11 +135,17 @@ const addTag = async function addTag(id, tag){
             let obj = {
                 tags_following: tags
             }
-            return  await updateUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
 const removeTag = async function removeTag(id, tag){
+    if(!id){
+        throw 'user must be input';
+    }
+    if(!tag){
+        throw 'tag must be input';
+    }
         const user = await getUser(id);
         let tags = user.tags_following;
         if(!tags.includes(tag)){
@@ -127,7 +157,7 @@ const removeTag = async function removeTag(id, tag){
             let obj = {
                 tags_following: tags
             }
-            return updatedUser(id, obj);
+            return await updateUser(id, obj);
         }
     };
 
@@ -165,9 +195,7 @@ const removeRecipe = async function removeRecipe(id, recipeId){
 
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
-        console.log("1");
         const user = await getUser(id);
-        console.log(user);
         let recipes = user.own_recipes;
         if(recipes.includes(recipeId)){
             throw 'recipe already made';
@@ -220,12 +248,15 @@ const getFeed = async function getFeed(id){
         let tags  = await getTags(id)
         let following  = await getFollowing(id);
         const recipeCollection= await recipes();
-        let recipesBy = [];
-        recipeCollection.find().forEach(function(recipe){
-            if((tags.filter(value => recipe.tags.includes(value)) != []) || following.includes(recipe.author_id)){
+        let recipesBy = new Array();
+        await recipeCollection.find().forEach(function(recipe){
+            console.log(recipe.title);
+            if((tags.filter(value => recipe.tags.includes(value)).length != 0) || following.includes(recipe.author_id)){
                 recipesBy.push(recipe);
+                console.log("active");
             }
         });
+        console.log(recipesBy);
         return recipesBy;
 
     }catch(e){
@@ -237,7 +268,7 @@ const updateUser = async function updateUser(id, newUser){
         if(!id || !(id instanceof ObjectId))
             if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
                 throw 'You need to input a valid id';
-        console.log(newUser);
+        //console.log(newUser);
         let user = await getUser(id);
         let updatedUser = {
             name: user.name,
@@ -253,7 +284,7 @@ const updateUser = async function updateUser(id, newUser){
             num_followers: user.num_followers,
             num_following: user.num_following
         };
-        console.log(updatedUser);
+        //console.log(updatedUser);
         if(newUser.name && typeof(newUser.name) == 'string'){
             updatedUser.name = newUser.name;
         }
@@ -288,13 +319,20 @@ const updateUser = async function updateUser(id, newUser){
         if(newUser.followers && Array.isArray(newUser.followers)){
             updatedUser.followers = newUser.followers;
         }
-        if(newUser.num_followers && typeof(num_followers) == 'number'){
+        if(newUser.num_followers != null && typeof(newUser.num_followers) == 'number'){
+            console.log("this is true")
             updatedUser.num_followers = newUser.num_followers;
         }
-        if(newUser.num_following && typeof(num_following) == 'number'){
+        if(newUser.num_following != null && typeof(newUser.num_following) == 'number'){
+            console.log("this is true!!")
             updatedUser.num_following = newUser.num_following;
         }
-        console.log(updatedUser);
+        console.log("newUser")
+        console.log(newUser.num_followers);
+        console.log(newUser.num_following);
+        console.log("updatedUser");
+        console.log(updatedUser.num_followers);
+        console.log(updatedUser.num_following);
         const userCollection = await users();
         const updateInfo = await userCollection.updateOne(
             { _id: ObjectId(id) },
@@ -308,6 +346,7 @@ const updateUser = async function updateUser(id, newUser){
 
 const addUser = async function addUser(name,username,password,email,profile_picture){
         const userCollection = await users();
+        console.log("Hello");
         if(!name || typeof(name) != 'string'){
             throw 'user must input valid name';
         }
@@ -328,7 +367,6 @@ const addUser = async function addUser(name,username,password,email,profile_pict
             throw 'user must input valid profile_picture';
             //perhaps we should change this to set it to a default profile picture if one isnt submitted
         }
-
         let newUser = {
             _id: new ObjectId(),
             name: name,
@@ -366,6 +404,7 @@ module.exports = {
     addUser,
     getUser,
     getUserByUsername,
+    getAllUsers,
     addFollower,
     follow,
     addRecipe,

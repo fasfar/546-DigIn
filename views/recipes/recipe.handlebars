@@ -31,20 +31,45 @@
             </ul>
         </dd>
 
+        <dt>Likes</dt>
+        <dd>
+            <ul>
+                <li>
+                    {{recipe.total_likes}}
+                </li>
+                <li>
+                    <a href="/recipes/likesList/{{recipe._id}}">View users who liked this post.</a>
+                </li>
+            </ul>
+        </dd>
+
         <dt>Comments</dt>
         <dd>
             <ul>
-                {{#each recipe.comments}}
-                    <li>{{this}}</li>
-                {{/each}}
+                {{#each_upto comments 5}}
+                    <li>
+                        <a href="/otheruser/{{this.user_id}}">{{this.user}}</a>
+                    </li>
+                    <li>{{this.comment}}</li>
+                    {{#if this.own_comment}}
+                        <li>
+                            <a href="/recipes/deleteComment/{{this._id}}">Delete comment.</a>
+                        </li>
+                    {{/if}}
+                {{/each_upto}}
             </ul>
+            <a href="/recipes/commentsList/{{recipe._id}}">View more comments.</a>
         </dd>
         
         {{!-- need to add likes and comments! --}}
     </dl>
 
-    <a href="/recipes/like/{{recipe._id}}">Like</a>
-    <a href="/recipes/comment/{{recipe._id}}">Add comment</a>
-    <a href="/recipes/delete/{{recipe._id}}">Delete recipe.</a>
-    <a href="/recipes/edit/{{recipe._id}}">Edit recipe.</a>
+    <a href="/recipes/toggleLike/{{recipe._id}}">{{like_dislike}}</a>
+    <a href="/recipes/addComment/{{recipe._id}}">Add comment</a>
+
+    {{#if own_recipe}}
+        <a href="/recipes/delete/{{recipe._id}}">Delete recipe.</a>
+        <a href="/recipes/edit/{{recipe._id}}">Edit recipe.</a>
+    {{/if}}
+
 </div>

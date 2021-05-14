@@ -1,5 +1,5 @@
 <div>
-    <a href="/recipes/addRecipe">Add new recipe.</a>
+    <button type="button" class="btn btn-outline-info"><a href="/recipes/addRecipe">Add new recipe.</a></button>
     <div>
     <form id="recipeForm" action="/search" method='POST'>
     <label for "searchType">Search Type</label>
@@ -10,7 +10,7 @@
     </select>
     <label for="recipeSearch">Search</label>
     <input type="text" id="recipeSearch" name="recipe">
-    <button type="submit">Search</button>
+    <button class="btn btn-outline-success fas fa-search" type="submit">Search</button>
 
     </form>
     <div id="searchResults" hidden>

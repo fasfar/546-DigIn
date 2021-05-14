@@ -1,3 +1,27 @@
 <div>
-    <ul id="recipeList">{{#each feed}} <li><a href="/recipes/id/{{this._id}}">{{this.title}}</a></li> {{/each}}</ul>
+    <ul id="recipeList">
+        {{#each feed}} 
+            <li>
+                <h2><a href="/recipes/id/{{this._id}}">{{this.title}}</a></h2>
+                <dl>
+                    <dt>
+                        Author
+                    </dt>
+                    <dd>
+                        <a href ="/otherUser/{{this.author_id}}">{{this.author}}</a>
+                    </dd>
+                    <dt>
+                        Tags
+                    </dt>
+                    <dd>
+                        <ul>
+                            {{#each this.tags}}
+                                <li>{{this}}</li>
+                            {{/each}}
+                        </ul>
+                    </dd>
+                </dl>
+            </li>  
+        {{/each}}
+    </ul>
 </div>

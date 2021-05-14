@@ -163,9 +163,17 @@ async function getRecipeByTag(tag){
         throw 'tag is not in string format.'
     }
     const recipeCollection = await recipes()
-    return await recipeCollection
-    .find({'tags': tag})
-    .toArray()
+    let taggedRecipes = new Array();
+    await recipeCollection.find().forEach(function(recipe){
+        console.log(recipe.title);
+        console.log(recipe.tags);
+        console.log(tag);
+        console.log(recipe.tags.includes(tag));
+        if(recipe.tags.includes(tag)){
+            taggedRecipes.push(recipe);
+        }
+    });
+    return taggedRecipes;
 }
 
 async function getRecipeByAuthor(author){
@@ -252,8 +260,6 @@ async function updatedAuthor(id, uAuthor){
     }
     const recipeCollection = await recipes();
     let newRecipe = await recipeCollection.updateOne({_id: obj}, {$set: {author : uAuthor}});
-    console.log(newRecipe);
-    console.log(await module.exports.getRecipeById(id));
     return await module.exports.getRecipeById(id);
 }
 

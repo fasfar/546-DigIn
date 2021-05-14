@@ -110,7 +110,8 @@ router.post('/', async (req, res) => {
       const {title, ingredients, tags, instructions} = recipe;
       let author = req.session.user.username;
       let author_id = req.session.user._id;
-      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(tags));
+      let noSpaceTags = tags.replace(/\s+/g, '');
+      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(noSpaceTags));
       res.render("recipes/recipeAddedSuccessfully");
     } catch (e) {
       res.status(400).json({ error: e.toString() });
@@ -146,7 +147,6 @@ router.put('/:id', async (req, res) => {
 router.get('/addComment/:id', async (req, res) => {
   let commentInfo = req.params;
   let recipe_id = commentInfo.id;
-  console.log(recipe_id);
   let recipe = await recipeData.getRecipeById(recipe_id);
   if(req.session.user){
     try {
@@ -351,7 +351,6 @@ router.post('/searchByTag/:searchTerm', async(req, res)=>{   //this route is cal
     const recipeTag = req.params.searchTerm
   
     const recipes = await recipeData.getRecipeByTag(recipeTag);
-    console.log(recipes)
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
   }
   catch(e){
@@ -363,8 +362,7 @@ router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route
   try{
     const recipeName = req.params.searchTerm
     const recipes = await recipeData.getRecipeByTitle(recipeName);
-    console.log(recipeName)
-    console.log(recipes)
+
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
   }
   catch(e){
@@ -375,9 +373,7 @@ router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route
 router.post('/searchByAuthor/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
   try{
     const author = req.params.searchTerm
-    console.log(author)
     const recipes = await recipeData.getRecipeByAuthor(author);
-    console.log(recipes)
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
   }
   catch(e){

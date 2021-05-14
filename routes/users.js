@@ -46,7 +46,7 @@ router.get('/private', async (req, res) => {
     if(req.session.user) {
         let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username)
         for(recipe of userRecipes){
-            console.log(recipe.title);
+
         }
         req.session.user = await userData.getUser(req.session.user._id);
         return res.render("users/userProfile", {user: req.session.user, recipes: userRecipes});
@@ -125,8 +125,7 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 await userData.follow(req.session.user._id,req.params.id); //session user follows route user
                 await userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
-                console.log(await userData.getUser(req.session.user._id))
-                console.log(await userData.getUser(req.params.id))
+
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
@@ -137,8 +136,7 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 await userData.unFollow(req.session.user._id,req.params.id); //session user unfollows route user
                 await userData.removeFollower(req.params.id,req.session.user._id); //route user unfollowed by session user
-                console.log(await userData.getUser(req.session.user._id))
-                console.log(await userData.getUser(req.params.id))
+
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
@@ -155,7 +153,7 @@ router.patch('/follow/:id', async (req, res) => {
 router.get('/followers', async (req, res) => {
     if(req.session.user){
         let userFollowers = await userData.getFollowers(req.session.user._id);
-        console.log(userFollowers)
+
         res.render('users/followers', {followers: userFollowers});
     }
     else{
@@ -281,7 +279,6 @@ router.get('/tags', async (req, res) =>{
 router.post('/tags/:tag', async (req, res) =>{
     if(req.session.user){
         try{
-            console.log(req.params.tag);
             let user = req.session.user;
             let tag = req.params.tag;
             let FollowedTag = await userData.addTag(user._id, tag)

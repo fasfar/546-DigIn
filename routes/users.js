@@ -49,7 +49,19 @@ router.get('/private', async (req, res) => {
         for(recipe of userRecipes){
             console.log(recipe.title);
         }
+        req.session.user = await userData.getUser(req.session.user._id);
         return res.render("users/userProfile", {user: req.session.user, recipes: userRecipes});
+    }
+    else{
+        req.session.error = "401: Unauthorized User";
+        res.redirect("/")
+    }
+});
+
+router.get('/allUsers/', async (req, res) => {
+    if(req.session.user){
+        let allUsers = await userData.getAllUsers();
+        res.render("users/allUsers", {users: allUsers});
     }
     else{
         req.session.error = "401: Unauthorized User";
@@ -83,7 +95,12 @@ router.get('/otherUser/:id', async(req, res) => {
             if(req.session.user._id == req.params.id){
                 return res.redirect('/private');
             }else{
-                return res.render('users/otherUser', {user: otherUser})
+                if(await userData.isFollowing(req.session.user._id,req.params.id)){
+                    res.render('users/otherUser', {user: otherUser, isFollowing: true});
+                }
+                else{
+                    res.render('users/otherUser', {user: otherUser})
+                }
             }
         }
         catch(e){
@@ -105,11 +122,11 @@ router.patch('/follow/:id', async (req, res) => {
     //the :id request parameter corresponds to the followed's id. 
     //The following user's id obtained from session cookie
     if(req.session.user){
-        if(userData.isFollowing(req.session.user._id,req.params.id)){
+        if(!await userData.isFollowing(req.session.user._id,req.params.id)){
             try{
                 userData.follow(req.session.user._id,req.params.id); //session user follows route user
                 userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
-
+                res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
                 console.log(e.toString());
@@ -119,6 +136,7 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 userData.unFollow(req.session.user._id,req.params.id); //session user unfollows route user
                 userData.removeFollower(req.params.id,req.session.user._id); //route user unfollowed by session user
+                res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
                 console.log(e.toString());
@@ -175,6 +193,8 @@ router.get('/editUser', async(req, res) => {
         res.redirect('/');
     }
 })
+
+
 
 router.patch('/editUser', async (req, res) => {
     if(req.session.user){

@@ -3,19 +3,39 @@ const express = require('express');
 const { parseConnectionString } = require('mongodb/lib/core');
 const router = express.Router();
 const data = require('../data');
+const { getRecipeById } = require('../data/recipes');
 const recipeData = data.recipes;
+const commentData = data.comments;
+const userData = data.users;
+const likesData = data.likes;
 
 const makeArray = function makeArray(str){
   return str.split(',');
 }
 
 router.get('/id/:id', async (req, res) => {
-  try {
-    const recipe = await recipeData.getRecipeById(req.params.id);
-    res.render("recipes/recipe", {recipe: recipe});
-  } catch (e) {
-    res.status(404).json({ error: 'Recipe not found' });
+  let user = req.session.user;
+  let like_dislike = "Like";
+  
+  if(req.session.user){
+    let is_liked = await likesData.checkIfLiked(req.params.id, user._id);
+    if(is_liked){
+      like_dislike = "Remove like";
+    }
+    let ownRecipe = await recipeData.ownRecipe(req.params.id, user._id);
+    try {
+      const recipe = await recipeData.getRecipeById(req.params.id);
+      let commentList = await commentData.ownComment(req.params.id, user._id);
+      res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList});
+    } catch (e) {
+      res.status(404).json({ error: 'Recipe not found' });
+    }
   }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
+  }
+  
 });
 
 router.get('/', async (req, res) => {
@@ -127,6 +147,132 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+router.get('/addComment/:id', async (req, res) => {
+  let commentInfo = req.params;
+  let recipe_id = commentInfo.id;
+  console.log(recipe_id);
+  let recipe = await recipeData.getRecipeById(recipe_id);
+  if(req.session.user){
+    try {
+      res.render("recipes/addComment", {recipe_id: recipe_id, recipe_name: recipe.title});
+    } catch (e) {
+      res.status(500).json({ error: e });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
+  }
+});
+
+router.post('/addComment/:id', async (req, res) => {
+  let commentInfo = req.body;
+  let recipe_id = commentInfo.id;
+  let recipe = await recipeData.getRecipeById(recipe_id);
+  let user = req.session.user;
+
+ 
+  if(req.session.user){
+    try {
+      let comment = await commentData.createComment(recipe._id, user.username, user._id, commentInfo.comment);
+      let recipe2 = await recipeData.getRecipeById(recipe_id);
+      res.redirect("/recipes/id/" + recipe_id);
+    } catch (e) {
+      res.status(500).json({ error: e.toString() });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
+  }
+});
+
+router.get('/toggleLike/:id', async (req, res) => {
+  let recipe_id = req.params.id;
+  let recipe = await recipeData.getRecipeById(recipe_id);
+  let user = req.session.user;
+  let user_name = user.username;
+  let user_id = user._id;
+  let likes = recipe.likes;
+
+  if(req.session.user){
+    try {
+      let is_liked = await likesData.checkIfLiked(recipe._id, user_id);
+
+      if(!is_liked){
+        let like = await likesData.addLike(recipe._id, user_name, user_id);
+      }
+      else{
+        let like = await likesData.remove(recipe._id, user_id);
+      }
+
+      res.redirect("/recipes/id/" + recipe_id);
+    } catch (e) {
+      res.status(500).json({ error: e.toString() });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
+  }
+});
+
+router.get('/likesList/:id', async (req, res) => {
+  let recipe_id = req.params.id;
+  let recipe = await recipeData.getRecipeById(recipe_id);
+  let likes = recipe.likes;
+
+  if(req.session.user){
+    try {
+      res.render("recipes/likesList", {users: likes});
+    } catch (e) {
+      res.status(500).json({ error: e.toString() });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
+  }
+});
+
+router.get('/commentsList/:id', async (req, res) => {
+  let recipe_id = req.params.id;
+  let recipe = await recipeData.getRecipeById(recipe_id);
+  let comments = recipe.comments;
+
+  if(req.session.user){
+    try {
+      res.render("recipes/commentsList", {comments: comments});
+    } catch (e) {
+      res.status(500).json({ error: e.toString() });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
+  }
+});
+
+router.get('/deleteComment/:commentId', async (req, res) => {
+  let comment_id = req.params.commentId;
+  let comment = await commentData.getById(comment_id);
+  let recipe_id = comment.recipeId;
+
+  if(req.session.user){
+    try {
+      let deletion = await commentData.remove(comment_id);
+
+      res.redirect("/recipes/id/" + recipe_id);
+    } catch (e) {
+      res.status(500).json({ error: e.toString() });
+    }
+  }
+  else{
+    req.session.error = "403: Unauthorized User"
+    res.redirect('/')
+  }
+});
+
 router.patch('/edit/:id', async (req, res) => {
   const requestBody = req.body;
   let updatedObject = {};
@@ -138,13 +284,6 @@ router.patch('/edit/:id', async (req, res) => {
         updatedObject.title = requestBody.title;
       } catch(e){
         res.status(400).json({ error: 'Issue with title field. Try again.' });
-      }
-    }
-    if (requestBody.author && requestBody.author !== oldRecipe.author){
-      try{
-        updatedObject.author = requestBody.author;
-      } catch(e){
-        res.status(400).json({ error: 'Issue with author field. Try again.' });
       }
     }
     if (requestBody.ingredients && requestBody.ingredients !== oldRecipe.ingredients){
@@ -184,7 +323,6 @@ router.patch('/edit/:id', async (req, res) => {
       const updatedRecipe = await recipeData.updateRecipe(
         req.params.id,
         updatedObject.title,
-        updatedObject.author,
         updatedObject.ingredients,
         updatedObject.instructions,
         updatedObject.pictures

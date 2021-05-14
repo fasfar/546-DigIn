@@ -20,7 +20,7 @@
 
     <ul id="allRecipes">
         {{#each all_recipe_list}}
-            <li>
+            <li class="list-group-item list-group-item-action">
                 <a class="recipeList" href="/recipes/id/{{this._id}}">{{this.title}}</a>
             </li>
         {{/each}}

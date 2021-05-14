@@ -38,8 +38,6 @@ const addFollower = async function addFollower(id1, id2){
             throw id2 + ' already follows ' + id1;
         }else{
             let new_num_following = user.num_followers + 1;
-            console.log("HELLO");
-            console.log(new_num_following);
             followers.push(id2);
             let obj = {
                 followers: followers,
@@ -60,8 +58,6 @@ const removeFollower = async function removeFollower(id1, id2){
                 return value != id2;
             });
             let new_num_followers = user.num_followers - 1;
-            console.log("HELLO");
-            console.log(new_num_followers);
             let obj = {
                 followers: followers,
                 num_followers: new_num_followers
@@ -79,8 +75,6 @@ const follow = async function follow(id1, id2){
         }else{
             users_following.push(id2);
             let new_num_following = user.num_following + 1;
-            console.log("HELLO");
-            console.log(new_num_following);
             let obj = {
                 users_following: users_following,
                 num_following: new_num_following
@@ -93,7 +87,6 @@ const unFollow = async function unFollow(id1, id2){
         //id1 unfollows id2
         const user = await getUser(id1);
         let users_following = user.users_following;
-        console.log(users_following);
         if(!users_following.includes(id2)){
             throw id1 + ' does not follow ' + id2;
         }else{

@@ -44,7 +44,6 @@ router.post('/login', async (req, res) => {
 
 router.get('/private', async (req, res) => {
     if(req.session.user) {
-        console.log(req.session.user);
         let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username)
         for(recipe of userRecipes){
             console.log(recipe.title);
@@ -126,6 +125,8 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 await userData.follow(req.session.user._id,req.params.id); //session user follows route user
                 await userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
+                console.log(await userData.getUser(req.session.user._id))
+                console.log(await userData.getUser(req.params.id))
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
@@ -136,6 +137,8 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 await userData.unFollow(req.session.user._id,req.params.id); //session user unfollows route user
                 await userData.removeFollower(req.params.id,req.session.user._id); //route user unfollowed by session user
+                console.log(await userData.getUser(req.session.user._id))
+                console.log(await userData.getUser(req.params.id))
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){

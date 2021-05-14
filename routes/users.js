@@ -304,7 +304,7 @@ router.post('/utags/:tag', async (req, res) =>{
             let user = req.session.user;
             let tag = req.params.tag;
             let deletedTag = await userData.removeTag(user._id, tag)
-            res.render('/tags');
+            res.redirect('/tags');
 
         }
         catch (e){

@@ -45,9 +45,6 @@ router.post('/login', async (req, res) => {
 router.get('/private', async (req, res) => {
     if(req.session.user) {
         let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username)
-        for(recipe of userRecipes){
-
-        }
         req.session.user = await userData.getUser(req.session.user._id);
         return res.render("users/userProfile", {user: req.session.user, recipes: userRecipes});
     }

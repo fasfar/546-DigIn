@@ -131,33 +131,15 @@ async function getAllRecipes(){
     return recipesToReturn;
 }
 
-async function addCommentToRecipe(recipeId, commentId){
-    let currentRecipe = this.getRecipeById(recipeId)
-
-    const recipeCollection = await recipes()
-    const updateInfo = await recipeCollection.updateOne(
-        {_id: recipeId}, 
-        {$addtoSet: {comments: {id: commentId}}}
-    )
-    if(!updateInfo.matchedCount && !updateInfo.modifiedCount){
-        throw 'Update failed'
-    }
-    return await this.getRecipeById(recipeId)
-
-}
-
 //gets a recipe by id
 async function getRecipeById(id){
     if(!id){
         throw `Please provide a recipe id`
     }
-    if(typeof id != "string"){
+    if(typeof id.toString() != "string"){
         throw ` Not a proper recipe id`
     }
-    if(!id.trim()){
-        throw `Please provide a recipe id`
-    }
-    id.trim()
+    id.toString().trim()
     let obj = ObjectId(id)
     var objId = require('mongodb').ObjectID
     if(!objId.isValid(obj)){
@@ -226,6 +208,18 @@ async function getRecipeByIngredients(ingredients){
     return await recipeCollection
     .find({'ingredients': { $in: ingredients}})
     .toArray()
+}
+
+async function ownRecipe(recipe_id, user_id){
+    let recipe = await getRecipeById(recipe_id);
+    let recipe_author = recipe.author_id;
+
+    if(user_id === recipe_author){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 //update title of recipe
@@ -347,15 +341,11 @@ async function updatedPicture(id, updatedPicture){
 
 }
 
-async function updateRecipe(id, uTitle, uAuthor, uIngredients, uInstructions, uPicture){
+async function updateRecipe(id, uTitle, uIngredients, uInstructions, uPicture){
     let recipe = this.getRecipeById(id); 
     
     if(uTitle && uTitle != recipe.title){
         await updatedTitle(id, uTitle);
-    }
- 
-    if(uAuthor && uAuthor != recipe.author){
-        await updatedAuthor(id, uAuthor);
     }
    
     if(uIngredients && uIngredients != recipe.ingredients){
@@ -409,13 +399,13 @@ async function removeRecipe(id){
 module.exports = {
     addRecipe,
     getAllRecipes,
-    addCommentToRecipe,
     getRecipeById,
     getRecipeByAuthor,
     getRecipeById,
     getRecipeByIngredients,
     getRecipeByTag,
     getRecipeByTitle,
+    ownRecipe,
     updateRecipe,
     updatedAuthor,
     updatedIngredients, 

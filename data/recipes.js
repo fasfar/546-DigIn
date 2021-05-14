@@ -165,10 +165,6 @@ async function getRecipeByTag(tag){
     const recipeCollection = await recipes()
     let taggedRecipes = new Array();
     await recipeCollection.find().forEach(function(recipe){
-        console.log(recipe.title);
-        console.log(recipe.tags);
-        console.log(tag);
-        console.log(recipe.tags.includes(tag));
         if(recipe.tags.includes(tag)){
             taggedRecipes.push(recipe);
         }

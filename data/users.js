@@ -339,10 +339,8 @@ const updateUser = async function updateUser(id, newUser){
                 throw 'Username already taken';
             }
             let rlist = await recipeData.getRecipeByAuthor(user.username);
-            console.log(rlist)
             let i;
             for(i = 0; i< rlist.length; i++){
-                console.log(rlist[i]);
                 await recipeData.updatedAuthor(rlist[i]._id, newUser.username);
             }
             updatedUser.username = newUser.username;

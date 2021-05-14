@@ -90,7 +90,7 @@ async function addRecipe(title, author, author_id, ingredients, instructions, ta
         _id : newId,
         title: title, 
         author: author, 
-        author: author_id,
+        author_id: author_id,
         ingredients: ingredients, // list of objects
         instructions: instructions,
         likes: [],
@@ -102,6 +102,7 @@ async function addRecipe(title, author, author_id, ingredients, instructions, ta
     
 
 }
+
 
 async function getAllRecipes(){
     const recipeCollection = await recipes()
@@ -170,9 +171,9 @@ async function getRecipeByTag(tag){
     if(typeof tag != 'string'){
         throw 'tag is not in string format.'
     }
-    const recipeCollection = recipes()
+    const recipeCollection = await recipes()
     return await recipeCollection
-    .find({'tag': tag})
+    .find({'tags': tag})
     .toArray()
 }
 

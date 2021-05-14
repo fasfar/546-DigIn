@@ -53,6 +53,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 router.get('/addRecipe', async (req, res) => {
   if(req.session.user){
     try {
@@ -357,5 +358,44 @@ router.delete('/delete/:id', async (req, res) => {
   }
   res.render("recipes/recipeDeletedSuccessfully");
 });
+router.post('/searchByTag/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
+  try{
+    const recipeTag = req.params.searchTerm
+  
+    const recipes = await recipeData.getRecipeByTag(recipeTag);
+    console.log(recipes)
+    res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
+  }
+  catch(e){
+    res.status(404).json({error: "Recipes not found"})
+  }
+
+})
+router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
+  try{
+    const recipeName = req.params.searchTerm
+    const recipes = await recipeData.getRecipeByTitle(recipeName);
+    console.log(recipeName)
+    console.log(recipes)
+    res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
+  }
+  catch(e){
+    res.status(404).json({error: "Recipes not found"})
+  }
+
+})
+router.post('/searchByAuthor/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
+  try{
+    const author = req.params.searchTerm
+    console.log(author)
+    const recipes = await recipeData.getRecipeByAuthor(author);
+    console.log(recipes)
+    res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
+  }
+  catch(e){
+    res.status(404).json({error: "Recipes not found"})
+  }
+
+})
 
 module.exports = router;

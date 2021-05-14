@@ -21,8 +21,26 @@ hbs.handlebars.registerHelper('each_upto', function(ary, max, options) {
   return result.join('');
 });
 
-app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
+const handlebarsInstance = exphbs.create({
+  defaultLayout: 'main',
+  // Specify helpers which are only registered on this instance.
+  helpers: {
+    asJSON: (obj, spacing) => {
+      if (typeof spacing === 'number')
+        return new Handlebars.SafeString(JSON.stringify(obj, null, spacing));
+
+      return new Handlebars.SafeString(JSON.stringify(obj));
+    }
+  },
+  partialsDir: ['views/partials/']
+});
+
+app.engine('handlebars', handlebarsInstance.engine);
+
 app.set('view engine', 'handlebars');
+
+
+
 
 app.use('/recipes/edit/:id', async (req, res, next) => {
   console.log(req.method);

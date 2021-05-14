@@ -11,6 +11,7 @@ const main = async() => {
     const cookies = await recipes.addRecipe("Chocolate Chip Cookies", "Grace Miguel", ["flour", "eggs", "sugar", "chocolate chips", "milk", "baking soda"], "Preheat t0 375. Cook.", ["dessert"], "picture")
     const getChocolate = await recipes.getRecipeByIngredients(["chocolate chips"])
      const comment = await comments.createComment(bananaBread._id, "grace", "this recipe is great")
+     const getTag = await recipes.getRecipeByTag("dessert")
     // console.log(bananaBread)
     // console.log(comment)
     // const comment1 = await recipes.addCommentToRecipe(bananaBread._id, comment._id)
@@ -19,7 +20,7 @@ const main = async() => {
     console.log(bananaBread._id)
     let id = bananaBread._id
     const allCom = await comments.getAll(id)
-    const removecom = await comments.remove(comment._id)
+    //const removecom = await comments.remove(comment._id)
   
 
     // const removeComment = await comments.remove(comment._id)

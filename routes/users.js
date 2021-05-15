@@ -196,19 +196,26 @@ router.patch('/saveRecipe/:id', async (req, res) => {
     //the :id request parameter corresponds to the recipe's id. 
     //User's id obtained from session cookie
     if(req.session.user){
-        userData.saveRecipe(req.session.user._id, req.params.id)
-    }
-    else{
-        req.session.error = "401: Unauthorized User"
-        res.redirect('/');
-    }
-});
-
-router.patch('/removeRecipe/:id', async (req, res) => {
-    //the :id request parameter corresponds to the recipe's id. 
-    //User's id obtained from session cookie
-    if(req.session.user){
-        userData.saveRecipe(req.session.user._id, req.params.id)
+        if(!await userData.hasRecipeSaved(req.session.user._id,req.params.id)){
+            try{
+                await userData.saveRecipe(req.session.user._id,req.params.id); //session user follows route user
+                req.session.user = await userData.getUser(req.session.user._id);
+                return res.redirect('/recipes/id/' + req.params.id)
+            }
+            catch (e){
+                console.log(e.toString());
+            }
+        }
+        else{
+            try{
+                await userData.removeRecipe(req.session.user._id,req.params.id); //session user follows route user
+                req.session.user = await userData.getUser(req.session.user._id);
+                return res.redirect('/recipes/id/' + req.params.id)
+            }
+            catch (e){
+                console.log(e.toString());
+            }
+        }
     }
     else{
         req.session.error = "401: Unauthorized User"

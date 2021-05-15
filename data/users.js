@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongodb').ObjectId;
-const recipeData = require('./recipes.js');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const recipes = mongoCollections.recipes;
@@ -338,10 +337,14 @@ const updateUser = async function updateUser(id, newUser){
             if(someUser){
                 throw 'Username already taken';
             }
-            let rlist = await recipeData.getRecipeByAuthor(user.username);
+
+            const recipeCollection = await recipes()
+            rlist = await recipeCollection.find({'author': author}).toArray()
+
             let i;
             for(i = 0; i< rlist.length; i++){
-                await recipeData.updatedAuthor(rlist[i]._id, newUser.username);
+                let obj = ObjectId(id);
+                await recipeCollection.updateOne({_id: obj}, {$set: {author : newUser.username}});
             }
             updatedUser.username = newUser.username;
         }

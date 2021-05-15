@@ -1,6 +1,8 @@
 {
     "_id": "606219e9227bce189752a8bb",
-    "dateOfComment": "Mon Mar 29 2021 14:15:12 GMT-0400 (Eastern Daylight Time)",
-    "commenter": "john_doe_foodie",
+    "recipe_id": "id of recipe",
+    "user" : "Joe Schmo",
+    "user_id": "507f191e810c19729de860ea",
     "comment": "This food is trash"
+   
 }

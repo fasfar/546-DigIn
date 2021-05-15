@@ -172,7 +172,6 @@ router.patch('/saveRecipe/:id', async (req, res) => {
         if(!await userData.hasRecipeSaved(req.session.user._id,req.params.id)){
             try{
                 await userData.saveRecipe(req.session.user._id,req.params.id); //session user follows route user
-                req.session.user = await userData.getUser(req.session.user._id);
                 return res.redirect('/recipes/id/' + req.params.id)
             }
             catch (e){
@@ -182,7 +181,6 @@ router.patch('/saveRecipe/:id', async (req, res) => {
         else{
             try{
                 await userData.removeRecipe(req.session.user._id,req.params.id); //session user follows route user
-                req.session.user = await userData.getUser(req.session.user._id);
                 return res.redirect('/recipes/id/' + req.params.id)
             }
             catch (e){
@@ -274,10 +272,8 @@ module.exports = router;
 
 /*
 *TODO: Implement Users route functions. These functions will dictate how are data functions are accessed.*
-
     ROUTES NEEDED:
     Landing Page: Login/Sign up for account - GET / (users will act as our root directory aka users/ = / )
     User Profile Page: GET /:id (users/:id)
     User Profile Creation Form: GET users/createUser
-
 */

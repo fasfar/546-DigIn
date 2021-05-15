@@ -44,6 +44,7 @@
             if(!$(this).val() || $(this).val().trim().length == 0){
                 event.preventDefault()
                 alert("Inputs must be non-empty");
+                return false;
             }
         });
     });

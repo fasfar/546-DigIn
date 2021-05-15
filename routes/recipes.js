@@ -87,25 +87,25 @@ router.get('/edit/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const recipe = xss(req.body);
+  const recipe = req.body;
 
   if(!recipe){
     res.status(400).json({ error: 'You must provide recipe information' });
     return;
   }
-  if (!recipe.title) {
+  if (!xss(recipe.title)) {
     res.status(400).json({ error: 'You must provide recipe title' });
     return;
   }
-  if (!recipe.ingredients) {
+  if (!xss(recipe.ingredients)) {
     res.status(400).json({ error: 'You must provide recipe ingredients' });
     return;
   }
-  if (!recipe.tags) {
+  if (!xss(recipe.tags)) {
     res.status(400).json({ error: 'You must provide recipe tags' });
     return;
   }
-  if (!recipe.instructions) {
+  if (!xss(recipe.instructions)) {
     res.status(400).json({ error: 'You must provide recipe instructions' });
     return;
   }
@@ -127,8 +127,8 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  const updatedData = xss(req.body);
-  if (!updatedData.title || !updatedData.author || !updatedData.ingredients || !updatedData.tags || !updatedData.instructions) {
+  const updatedData = req.body;
+  if (!xss(updatedData.title) || !xss(updatedData.author) || !xss(updatedData.ingredients) || !xss(updatedData.tags) || !xss(updatedData.instructions)) {
     res.status(400).json({ error: 'You must supply all fields' });
     return;
   }
@@ -165,15 +165,15 @@ router.get('/addComment/:id', async (req, res) => {
 });
 
 router.post('/addComment/:id', async (req, res) => {
-  let commentInfo = xss(req.body);
-  let recipe_id = commentInfo.id;
+  let commentInfo = req.body;
+  let recipe_id = xss(commentInfo.id);
   let recipe = await recipeData.getRecipeById(recipe_id);
   let user = req.session.user;
 
  
   if(req.session.user){
     try {
-      let comment = await commentData.createComment(recipe._id, user.username, user._id, commentInfo.comment);
+      let comment = await commentData.createComment(recipe._id, user.username, user._id, xss(commentInfo.comment));
       let recipe2 = await recipeData.getRecipeById(recipe_id);
       res.redirect("/recipes/id/" + recipe_id);
     } catch (e) {
@@ -273,36 +273,36 @@ router.get('/deleteComment/:commentId', async (req, res) => {
 });
 
 router.patch('/edit/:id', async (req, res) => {
-  const requestBody = xss(req.body);
+  const requestBody = req.body;
   let updatedObject = {};
   try {
     const oldRecipe = await recipeData.getRecipeById(xss(req.params.id));
 
-    if (requestBody.title && requestBody.title !== oldRecipe.title){
+    if (xss(requestBody.title) && xss(requestBody.title) !== oldRecipe.title){
       try{
-        updatedObject.title = requestBody.title;
+        updatedObject.title = xss(requestBody.title);
       } catch(e){
         res.status(400).json({ error: 'Issue with title field. Try again.' });
       }
     }
-    if (requestBody.ingredients && requestBody.ingredients !== oldRecipe.ingredients){
+    if (xss(requestBody.ingredients) && xss(requestBody.ingredients) !== oldRecipe.ingredients){
       try{
         updatedObject.ingredients = makeArray(requestBody.ingredients);
       } catch(e){
         res.status(400).json({ error: 'Issue with ingredients field. Try again.' });
       }
     }
-    if (requestBody.tags && requestBody.tags !== oldRecipe.tags){
+    if (xss(requestBody.tags) && xss(requestBody.tags) !== xss(oldRecipe.tags)){
       try{
-        updatedObject.tags = makeArray(requestBody.tags);
+        updatedObject.tags = makeArray(xss(requestBody.tags));
         console.log(updatedObject.tags)
       } catch(e){
         res.status(400).json({ error: 'Issue with tags field. Try again.' });
       }
     }
-    if (requestBody.instructions && requestBody.instructions !== oldRecipe.instructions){
+    if (xss(requestBody.instructions) && xss(requestBody.instructions) !== oldRecipe.instructions){
       try{
-        updatedObject.instructions = requestBody.instructions;
+        updatedObject.instructions = xss(requestBody.instructions);
       } catch(e){
         res.status(400).json({ error: 'Issue with instructions field. Try again.' });
       }

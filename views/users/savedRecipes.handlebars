@@ -1,0 +1,27 @@
+<div>
+    <h1>Your Saved Recipes</h1>
+    <button type="button" class="btn btn-outline-primary btn-sm "><a href="/private" class="privateLink"> Back to My Profile </a></button>
+    <ul id="recipeList">
+        {{#each recipes}} 
+            <li class="list-group-item list-group-item-info">
+                <h2><a href="/recipes/id/{{this._id}}">{{this.title}}</a></h2>
+                <dl>
+                    <dt>
+                        Author
+                    </dt>
+                    <dd>
+                        <a href ="/otherUser/{{this.author_id}}">{{this.author}}</a>
+                    </dd>
+                    <dt>
+                        Tags
+                    </dt>
+                    <dd>
+                            {{#each this.tags}}
+                                <li>{{this}}</li>
+                            {{/each}}
+                    </dd>
+                </dl>
+            </li>  
+        {{/each}}
+    </ul>
+</div>

@@ -4,6 +4,7 @@ const data = require('../data');
 const userData = data.users
 const recipeData = data.recipes;
 const bcrypt = require('bcryptjs');
+const xss = require('xss');
 
 router.get('/', async (req, res) => {
     if(req.session.user){
@@ -18,8 +19,8 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
+    const username = xss(req.body.username);
+    const password = xss(req.body.password);
     if(!username || !password) {
         req.session.error = "401: Invalid Login Credentials";
         return res.redirect('/');
@@ -80,7 +81,7 @@ router.get('/createUser', async (req, res) => {
 router.post('/createUser', async (req, res) => {
     let newUser = req.body;
     try{
-        let thisUser = await userData.addUser(newUser.name, newUser.username, newUser.password, newUser.email, newUser.profile_picture);
+        let thisUser = await userData.addUser(xss(newUser.name), xss(newUser.username), xss(newUser.password), xss(newUser.email), xss(newUser.profile_picture));
         req.session.user = thisUser;
         return res.redirect('/private');
     }
@@ -92,11 +93,11 @@ router.post('/createUser', async (req, res) => {
 router.get('/otherUser/:id', async(req, res) => {
     if(req.session.user){
         try{
-            let otherUser = await userData.getUser(req.params.id);
-            if(req.session.user._id == req.params.id){
+            let otherUser = await userData.getUser(xss(req.params.id));
+            if(req.session.user._id == xss(req.params.id)){
                 return res.redirect('/private');
             }else{
-                if(await userData.isFollowing(req.session.user._id,req.params.id)){
+                if(await userData.isFollowing(req.session.user._id,xss(req.params.id))){
                     let userRecipes = await recipeData.getRecipeByAuthor(otherUser.username);
                     userRecipes.reverse()
                     res.render('users/otherUser', {user: otherUser, isFollowing: true, recipes:userRecipes});
@@ -127,12 +128,12 @@ router.patch('/follow/:id', async (req, res) => {
     //the :id request parameter corresponds to the followed's id. 
     //The following user's id obtained from session cookie
     if(req.session.user){
-        if(!await userData.isFollowing(req.session.user._id,req.params.id)){
+        if(!await userData.isFollowing(req.session.user._id,xss(req.params.id))){
             try{
-                await userData.follow(req.session.user._id,req.params.id); //session user follows route user
-                await userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
+                await userData.follow(req.session.user._id,xss(req.params.id)); //session user follows route user
+                await userData.addFollower(xss(req.params.id),req.session.user._id); //route user followed by session user
 
-                res.redirect('/otherUser/' + req.params.id)
+                res.redirect('/otherUser/' + xss(req.params.id))
             }
             catch (e){
                 console.log(e.toString());
@@ -140,10 +141,10 @@ router.patch('/follow/:id', async (req, res) => {
         }
         else{
             try{
-                await userData.unFollow(req.session.user._id,req.params.id); //session user unfollows route user
-                await userData.removeFollower(req.params.id,req.session.user._id); //route user unfollowed by session user
+                await userData.unFollow(req.session.user._id,xss(req.params.id)); //session user unfollows route user
+                await userData.removeFollower(xss(req.params.id),req.session.user._id); //route user unfollowed by session user
 
-                res.redirect('/otherUser/' + req.params.id)
+                res.redirect('/otherUser/' + xss(req.params.id));
             }
             catch (e){
                 console.log(e.toString());
@@ -196,11 +197,11 @@ router.patch('/saveRecipe/:id', async (req, res) => {
     //the :id request parameter corresponds to the recipe's id. 
     //User's id obtained from session cookie
     if(req.session.user){
-        if(!await userData.hasRecipeSaved(req.session.user._id,req.params.id)){
+        if(!await userData.hasRecipeSaved(req.session.user._id,xss(req.params.id))){
             try{
-                await userData.saveRecipe(req.session.user._id,req.params.id); //session user follows route user
+                await userData.saveRecipe(req.session.user._id,xss(req.params.id)); //session user follows route user
                 req.session.user = await userData.getUser(req.session.user._id);
-                return res.redirect('/recipes/id/' + req.params.id)
+                return res.redirect('/recipes/id/' + xss(req.params.id))
             }
             catch (e){
                 console.log(e.toString());
@@ -208,9 +209,9 @@ router.patch('/saveRecipe/:id', async (req, res) => {
         }
         else{
             try{
-                await userData.removeRecipe(req.session.user._id,req.params.id); //session user follows route user
+                await userData.removeRecipe(req.session.user._id,xss(req.params.id)); //session user follows route user
                 req.session.user = await userData.getUser(req.session.user._id);
-                return res.redirect('/recipes/id/' + req.params.id)
+                return res.redirect('/recipes/id/' + xss(req.params.id))
             }
             catch (e){
                 console.log(e.toString());
@@ -238,6 +239,10 @@ router.get('/editUser', async(req, res) => {
 router.patch('/editUser', async (req, res) => {
     if(req.session.user){
         let newUser = req.body;
+        let keys = Object.keys(newUser);
+        for(key of keys){
+            newUser[key] = xss(newUser[key]);
+        }
         try{
             let updatedUser = await userData.updateUser(req.session.user._id, newUser);
             req.session.user = updatedUser;
@@ -293,7 +298,7 @@ router.post('/tags/:tag', async (req, res) =>{
     if(req.session.user){
         try{
             let user = req.session.user;
-            let tag = req.params.tag;
+            let tag = xss(req.params.tag);
             let FollowedTag = await userData.addTag(user._id, tag)
             res.send(tag);
 
@@ -312,7 +317,7 @@ router.post('/utags/:tag', async (req, res) =>{
     if(req.session.user){
         try{
             let user = req.session.user;
-            let tag = req.params.tag;
+            let tag = xss(req.params.tag);
             let deletedTag = await userData.removeTag(user._id, tag)
             res.redirect('/tags');
 

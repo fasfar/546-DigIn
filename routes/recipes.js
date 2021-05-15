@@ -8,6 +8,7 @@ const recipeData = data.recipes;
 const commentData = data.comments;
 const userData = data.users;
 const likesData = data.likes;
+const xss = require('xss');
 
 const makeArray = function makeArray(str){
   let arr = str.split(',');
@@ -19,15 +20,15 @@ router.get('/id/:id', async (req, res) => {
   let user = req.session.user;
   let like_dislike = "Like";
   if(req.session.user){
-    let is_liked = await likesData.checkIfLiked(req.params.id, user._id);
+    let is_liked = await likesData.checkIfLiked(xss(req.params.id), xss(user._id));
     if(is_liked){
       like_dislike = "Remove like";
     }
-    let ownRecipe = await recipeData.ownRecipe(req.params.id, user._id);
+    let ownRecipe = await recipeData.ownRecipe(xss(req.params.id), xss(user._id));
     try {
-      const recipe = await recipeData.getRecipeById(req.params.id);
-      let commentList = await commentData.ownComment(req.params.id, user._id);
-      if(await userData.hasRecipeSaved(req.session.user._id, req.params.id))
+      const recipe = await recipeData.getRecipeById(xss(req.params.id));
+      let commentList = await commentData.ownComment(xss(req.params.id), user._id);
+      if(await userData.hasRecipeSaved(req.session.user._id, xss(req.params.id)))
       return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList, savedRecipe: true});
       else return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList});
     } catch (e) {
@@ -74,7 +75,7 @@ router.get('/addRecipe', async (req, res) => {
 router.get('/edit/:id', async (req, res) => {
   if(req.session.user){
     try {
-      res.render("recipes/editRecipe", {id: req.params.id});
+      res.render("recipes/editRecipe", {id: xss(req.params.id)});
     } catch (e) {
       res.status(500).json({ error: e });
     }
@@ -86,7 +87,7 @@ router.get('/edit/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const recipe = req.body;
+  const recipe = xss(req.body);
 
   if(!recipe){
     res.status(400).json({ error: 'You must provide recipe information' });
@@ -126,20 +127,20 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  const updatedData = req.body;
+  const updatedData = xss(req.body);
   if (!updatedData.title || !updatedData.author || !updatedData.ingredients || !updatedData.tags || !updatedData.instructions) {
     res.status(400).json({ error: 'You must supply all fields' });
     return;
   }
   try {
-    await recipe.getRecipeById(req.params.id);
+    await recipe.getRecipeById(xss(req.params.id));
   } catch (e) {
     res.status(404).json({ error: 'Recipe not found' });
     return;
   }
 
   try {
-    const updatedRecipe = await recipeData.updateRecipe(req.params.id, updatedData);
+    const updatedRecipe = await recipeData.updateRecipe(xss(req.params.id), updatedData);
     res.json(updatedRecipe);
   } catch (e) {
     res.status(500).json({ error: e });
@@ -147,7 +148,7 @@ router.put('/:id', async (req, res) => {
 });
 
 router.get('/addComment/:id', async (req, res) => {
-  let commentInfo = req.params;
+  let commentInfo = xss(req.params);
   let recipe_id = commentInfo.id;
   let recipe = await recipeData.getRecipeById(recipe_id);
   if(req.session.user){
@@ -164,7 +165,7 @@ router.get('/addComment/:id', async (req, res) => {
 });
 
 router.post('/addComment/:id', async (req, res) => {
-  let commentInfo = req.body;
+  let commentInfo = xss(req.body);
   let recipe_id = commentInfo.id;
   let recipe = await recipeData.getRecipeById(recipe_id);
   let user = req.session.user;
@@ -186,7 +187,7 @@ router.post('/addComment/:id', async (req, res) => {
 });
 
 router.get('/toggleLike/:id', async (req, res) => {
-  let recipe_id = req.params.id;
+  let recipe_id = xss(req.params.id);
   let recipe = await recipeData.getRecipeById(recipe_id);
   let user = req.session.user;
   let user_name = user.username;
@@ -216,7 +217,7 @@ router.get('/toggleLike/:id', async (req, res) => {
 });
 
 router.get('/likesList/:id', async (req, res) => {
-  let recipe_id = req.params.id;
+  let recipe_id = xss(req.params.id);
   let recipe = await recipeData.getRecipeById(recipe_id);
   let likes = recipe.likes;
 
@@ -234,7 +235,7 @@ router.get('/likesList/:id', async (req, res) => {
 });
 
 router.get('/commentsList/:id', async (req, res) => {
-  let recipe_id = req.params.id;
+  let recipe_id = xss(req.params.id);
   let user = req.session.user;
   let comments = await commentData.ownComment(recipe_id, user._id)
 
@@ -252,7 +253,7 @@ router.get('/commentsList/:id', async (req, res) => {
 });
 
 router.get('/deleteComment/:commentId', async (req, res) => {
-  let comment_id = req.params.commentId;
+  let comment_id = xss(req.params.commentId);
   let comment = await commentData.getById(comment_id);
   let recipe_id = comment.recipeId;
 
@@ -272,10 +273,10 @@ router.get('/deleteComment/:commentId', async (req, res) => {
 });
 
 router.patch('/edit/:id', async (req, res) => {
-  const requestBody = req.body;
+  const requestBody = xss(req.body);
   let updatedObject = {};
   try {
-    const oldRecipe = await recipeData.getRecipeById(req.params.id);
+    const oldRecipe = await recipeData.getRecipeById(xss(req.params.id));
 
     if (requestBody.title && requestBody.title !== oldRecipe.title){
       try{
@@ -319,7 +320,7 @@ router.patch('/edit/:id', async (req, res) => {
         updatedObject.tags,
         updatedObject.instructions
       );
-      res.redirect("/recipes/id/" + req.params.id);
+      res.redirect("/recipes/id/" + xss(req.params.id));
       
     } catch (e) {
       res.status(500).json({ error: e.toString() });
@@ -338,13 +339,13 @@ router.delete('/delete/:id', async (req, res) => {
     return;
   }
   try {
-    await recipeData.getRecipeById(req.params.id);
+    await recipeData.getRecipeById(xss(req.params.id));
   } catch (e) {
     res.status(404).json({ error: 'Recipe not found' });
     return;
   }
   try {
-    await recipeData.removeRecipe(req.params.id);
+    await recipeData.removeRecipe(xss(req.params.id));
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -352,7 +353,7 @@ router.delete('/delete/:id', async (req, res) => {
 });
 router.post('/searchByTag/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
   try{
-    const recipeTag = req.params.searchTerm
+    const recipeTag = xss(req.params.searchTerm);
   
     const recipes = await recipeData.getRecipeByTag(recipeTag);
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
@@ -364,7 +365,7 @@ router.post('/searchByTag/:searchTerm', async(req, res)=>{   //this route is cal
 })
 router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
   try{
-    const recipeName = req.params.searchTerm
+    const recipeName = xss(req.params.searchTerm);
     const recipes = await recipeData.getRecipeByTitle(recipeName);
 
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
@@ -376,7 +377,7 @@ router.post('/searchByRecipeName/:searchTerm', async(req, res)=>{   //this route
 })
 router.post('/searchByAuthor/:searchTerm', async(req, res)=>{   //this route is called be the ajax POST request when user presses search for recipe
   try{
-    const author = req.params.searchTerm
+    const author = xss(req.params.searchTerm)
     const recipes = await recipeData.getRecipeByAuthor(author);
     res.render('partials/search_item', {layout: null, recipes: recipes})    //this gives us the html partial
   }

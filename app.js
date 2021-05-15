@@ -65,6 +65,14 @@ app.use('/follow/:id', async (req, res, next) => {
   next();
 })
 
+app.use('/saveRecipe/:id', async (req, res, next) => {
+  console.log("TEST");
+  if(req.method === 'POST'){
+    req.method = 'PATCH';
+  }
+  next();
+})
+
 app.use(session({
     name: 'AuthCookie',
     secret: 'some secret string!',

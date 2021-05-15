@@ -324,10 +324,8 @@ module.exports = router;
 
 /*
 *TODO: Implement Users route functions. These functions will dictate how are data functions are accessed.*
-
     ROUTES NEEDED:
     Landing Page: Login/Sign up for account - GET / (users will act as our root directory aka users/ = / )
     User Profile Page: GET /:id (users/:id)
     User Profile Creation Form: GET users/createUser
-
 */

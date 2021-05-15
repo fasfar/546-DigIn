@@ -28,7 +28,9 @@ router.get('/id/:id', async (req, res) => {
     try {
       const recipe = await recipeData.getRecipeById(req.params.id);
       let commentList = await commentData.ownComment(req.params.id, user._id);
-      res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList});
+      if(await userData.hasRecipeSaved(req.session.user._id, req.params.id))
+      return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList, savedRecipe: true});
+      else return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList});
     } catch (e) {
       res.status(404).json({ error: 'Recipe not found' });
     }

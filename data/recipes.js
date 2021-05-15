@@ -102,7 +102,8 @@ async function getAllRecipes(){
     
     //create new list with the ids converted to strings
     const recipesToReturn = [];
-    for(let i = 0; i < recipeList.length; i++){
+    let i;
+    for(i = 0; i < recipeList.length; i++){
         let recipe = recipeList[i];
         let x = {
             _id: recipe._id.toString(),

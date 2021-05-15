@@ -172,6 +172,7 @@ router.patch('/saveRecipe/:id', async (req, res) => {
         if(!await userData.hasRecipeSaved(req.session.user._id,req.params.id)){
             try{
                 await userData.saveRecipe(req.session.user._id,req.params.id); //session user follows route user
+                req.session.user = await userData.getUser(req.session.user._id);
                 return res.redirect('/recipes/id/' + req.params.id)
             }
             catch (e){
@@ -181,6 +182,7 @@ router.patch('/saveRecipe/:id', async (req, res) => {
         else{
             try{
                 await userData.removeRecipe(req.session.user._id,req.params.id); //session user follows route user
+                req.session.user = await userData.getUser(req.session.user._id);
                 return res.redirect('/recipes/id/' + req.params.id)
             }
             catch (e){

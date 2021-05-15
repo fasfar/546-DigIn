@@ -1,5 +1,4 @@
 <div>
-    {{id}}
     <form id="new_recipe" action="/recipes/edit/{{id}}" method="POST">
 
         <label for="title">Title:</label>
@@ -14,6 +13,9 @@
         <label for="instructions">Instructions:</label>
         <input type="text" id="instructions" name="instructions">
 
-        <button type="submit">Submit</button>
+
+
+        <button class="btn btn-success" type="submit">Submit</button>
+
     </form>
 </div>

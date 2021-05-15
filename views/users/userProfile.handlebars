@@ -1,12 +1,13 @@
 <div id="userProfile">
     <h1>{{user.username}}</h1>
-    <a href="/followers" class="followLink">{{user.num_followers}} Followers</a>
-    <a href="/following" class="followLink">{{user.num_following}} Following</a>
-    <a href="/tags" class="tagLink"> Tags </a>
+    <button type="button" class="btn btn-outline-primary btn-sm"><a href="/followers" class="followLink">{{user.num_followers}} Followers</a></button>
+    <button type="button" class="btn btn-outline-primary btn-sm"><a href="/following" class="followLink">{{user.num_following}} Following</a></button>
+     <button type="button" class="btn btn-outline-primary btn-sm "><a href="/tags" class="tagLink"> Tags </a></button>
     <div>
+
         <ul id="recipeList">
             {{#each recipes}} 
-                <li>
+                <li class="list-group-item list-group-item-action list-group-item-primary">
                     <a href="/recipes/id/{{this._id}}">{{this.title}}</a>
                     <dl>
                         <dt>
@@ -37,8 +38,9 @@
                 </li> 
             {{/each}}
         </ul>
+
     </div>
     
-    <a href="/logout">Logout</a>
-    <a href="/editUser">Edit Profile</a>
+    <button class="btn btn-secondary btn-outline-dark" <a href="/logout">Logout</a></button>
+    <button type="button" id="editProfile" class="btn btn-info btn-outline-dark"><a href="/editUser">Edit Profile</a></button>
 </div>

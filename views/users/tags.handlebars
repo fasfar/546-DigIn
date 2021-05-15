@@ -1,15 +1,17 @@
 <form id="tagForm" action="/tags" method='POST'>
     <label for="followTag">Follow a tag</label>
     <input type="text" id="followTag" name="followTag">
-    <button type="submit">Follow</button>
+    <button class="btn btn-primary btn-sm" type="submit">Follow</button>
 </form>
 
 <div id = "tagList">
-    <ul id="followingTags">
-        {{#each tags}} <li id = {{this}}>{{this}}
+
+    <ul id="followingTags" class="list-group list-group-flush">
+        {{#each tags}} <li class="tag" id = {{this}}>{{this}}
             <form action="/utags/{{this}}" id="follow_form_{{this}}" method="POST">
-                <button type="submit" id="follow_form_{{this}}" >Unfollow</button>
+                <button type="submit"  class="btn btn-danger btn-sm" id="follow_form_{{this}}" >Unfollow</button>
             </form>
         </li> {{/each}}
+
     </ul>
 </div>

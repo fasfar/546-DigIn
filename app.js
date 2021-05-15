@@ -43,11 +43,9 @@ app.set('view engine', 'handlebars');
 
 
 app.use('/recipes/edit/:id', async (req, res, next) => {
-  console.log(req.method);
   if(req.method==='POST'){
     req.method='PATCH';
   }
-  console.log(req.method);
   next();
 });
 
@@ -66,7 +64,6 @@ app.use('/follow/:id', async (req, res, next) => {
 })
 
 app.use('/saveRecipe/:id', async (req, res, next) => {
-  console.log("TEST");
   if(req.method === 'POST'){
     req.method = 'PATCH';
   }

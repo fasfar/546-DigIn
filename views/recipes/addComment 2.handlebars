@@ -1,0 +1,12 @@
+<div>
+    <h1>Add comment</h1>
+
+    <form id="add_comment" action="/recipes/addComment/{{recipe_id}}" method="POST">
+        <label for="comment">New comment for {{recipe_name}}:</label>
+        <input type="text" id="comment" name="comment">
+
+        <input type="text" id="id" name="id" value={{recipe_id}} hidden=True>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>

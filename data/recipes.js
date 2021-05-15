@@ -283,7 +283,35 @@ async function updatedIngredients(id, updatedIngredients){
         }
     }
     const recipeCollection = await recipes()
-    await recipeCollection.updateOne({ _id: obj }, { $push: { ingredients: {$each: updatedIngredients} } });     //adds each element of the updatedIngredients to the existing array
+    await recipeCollection.updateOne({ _id: obj }, { $set: { ingredients: updatedIngredients} });     //adds each element of the updatedIngredients to the existing array
+    return await module.exports.getRecipeById(id);
+}
+
+//update tags
+async function updatedTags(id, updatedTags){
+    if(!id){
+        throw 'You must provide an id'
+    }
+    let obj = ObjectId(id)
+    //var objId = require('mongodb').ObjectID
+    // if(!objId.isValid(obj)){
+    //     throw ` ${objId} is not a proper mongo id`
+    // }
+    if(!updatedTags){
+        throw 'You must provide tags'
+    }
+    if(!Array.isArray(updatedTags)){
+        throw 'Ingredients must be an array of strings'
+    }
+    if(Array.isArray(updatedTags)){
+        for(i=0; i<updatedTags.length; i++){
+            if(typeof updatedTags[i] != 'string'){
+                throw 'the ingredient must be a string'
+            }
+        }
+    }
+    const recipeCollection = await recipes()
+    await recipeCollection.updateOne({ _id: obj }, { $set: { tags: updatedTags} });     //adds each element of the updatedIngredients to the existing array
     return await module.exports.getRecipeById(id);
 }
 
@@ -310,7 +338,7 @@ async function updatedInstructions(id, updatedInstructions){
     return await module.exports.getRecipeById(id);
 }
 
-async function updateRecipe(id, uTitle, uIngredients, uInstructions){
+async function updateRecipe(id, uTitle, uIngredients, uTags, uInstructions){
     let recipe = this.getRecipeById(id); 
     
     if(uTitle && uTitle != recipe.title){
@@ -318,7 +346,11 @@ async function updateRecipe(id, uTitle, uIngredients, uInstructions){
     }
    
     if(uIngredients && uIngredients != recipe.ingredients){
-        await updatedIngredients(id, uIngredients.split(','))
+        await updatedIngredients(id, uIngredients)
+    }
+
+    if(uTags && uTags != recipe.tags){
+        await updatedTags(id, uTags)
     }
     
     if(uInstructions && uInstructions!= recipe.instructions){
@@ -375,6 +407,7 @@ module.exports = {
     updatedAuthor,
     updatedIngredients, 
     updatedInstructions,
+    updatedTags,
     updatedTitle,
     removeRecipe
 };

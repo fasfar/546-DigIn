@@ -1,0 +1,18 @@
+<div>
+    <h1>All comments:</h1>
+
+    <ul>
+        {{#each comments}}
+            <li>
+                <a href="/otheruser/{{this.user_id}}">{{this.user}}</a>
+            </li>
+            <li>{{this.comment}}</li>
+            {{#if this.own_comment}}
+                <li>
+                    <a href="/recipes/deleteComment/{{this._id}}">Delete comment.</a>
+                </li>
+            {{/if}}
+        {{/each}}
+     </ul>
+
+</div>

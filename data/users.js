@@ -308,8 +308,9 @@ const getFeed = async function getFeed(id){
         let following  = await getFollowing(id);
         const recipeCollection= await recipes();
         let recipesBy = new Array();
+    
         await recipeCollection.find().forEach(function(recipe){
-            if((tags.filter(value => recipe.tags.includes(value)).length != 0) || following.includes(recipe.author_id)){
+            if((tags.filter(value => recipe.tags.includes(value)).length != 0) || following.includes(recipe.author_id.toString())){
                 recipesBy.push(recipe);
             }
         });

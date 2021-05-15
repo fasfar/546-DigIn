@@ -19,19 +19,19 @@ const main = async() => {
     
     
     //RECIPES
-    const recipe1 = await recipes.addRecipe("Spaghetti and Meatballs", "john_doe_foodie", user1._id, ["Pasta", "Ground Beef", "Garlic", "Tomato Sauce", "Italian Seasoning"], "Boil pasta for 10 minutes, Mix beef and seasoning, Combine pasta and meatballs in tomato sauce", ["Italian", "Dinner"]);
-    const recipe2 = await recipes.addRecipe("Mixed Berry Smoothie", "mike_makes_food", user3._id, ["Blueberries", "Strawberries", "Banana", "Yogurt", "Mango"], "Mix together equal parts blueberries and strawberries, Dice up mango into small pieces, Combine fruit with yogurt and blend until smooth", ["Vegan", "Healthy","Meal Replacement", "Vegetarian"]);
-    const recipe3 = await recipes.addRecipe("Spaghetti Squash", "firas_food", user2._id, ["Butternut Squash", "Garlic", "Salt"], "Roast the Squash for 30 minutes, Scrape the squash with a fork, Prepare pasta with garlic and seasonings", ['Vegan', "Healthy", "Dinner", "Vegetarian"]);
-    const recipe4 = await recipes.addRecipe("Brownies", "suzys_sweets", user5._id, ["Cocoa Powder", "Flour", "Eggs", "Milk", "Sugar"], "Combine dry ingredients, Mix wet ingredients separately, Combine all ingredients in a baking pan, Cook at 350F for 30 minutes", ["Dessert", "Chocolate"]);
-    const recipe5 = await recipes.addRecipe("Cream Puffs", 'graces_goods', user4._id, ["Puff Pastries", "Whipping Cream", "Sugar", "Powdered Sugar"], "Separate and cook puff pastries at 375F for 10 minutes, Whisk together whipping cream and sugar until peaks form, Allow puff pastries to cool, then fill with cream, Finish with powdered sugar", ["Italian", "Dessert"]);
-    const recipe6 = await recipes.addRecipe("Session Cookies", "professor_of_food", user6._id, ["Express", "NPM", "Flour", "Sugar", "Chocolate Chips"], "npm install express, npm install express-session, Combine dry ingredients and Javascript in one bowl, Cook at 350F in a Node.js oven for 10 minutes, npm start", ["Chocolate", "Dessert"]);
+    const recipe1 = await recipes.addRecipe("Spaghetti and Meatballs", "john_doe_foodie", user1._id.toString(), ["Pasta", "Ground Beef", "Garlic", "Tomato Sauce", "Italian Seasoning"], "Boil pasta for 10 minutes, Mix beef and seasoning, Combine pasta and meatballs in tomato sauce", ["Italian", "Dinner"]);
+    const recipe2 = await recipes.addRecipe("Mixed Berry Smoothie", "mike_makes_food", user3._id.toString(), ["Blueberries", "Strawberries", "Banana", "Yogurt", "Mango"], "Mix together equal parts blueberries and strawberries, Dice up mango into small pieces, Combine fruit with yogurt and blend until smooth", ["Vegan", "Healthy","Meal Replacement", "Vegetarian"]);
+    const recipe3 = await recipes.addRecipe("Spaghetti Squash", "firas_food", user2._id.toString(), ["Butternut Squash", "Garlic", "Salt"], "Roast the Squash for 30 minutes, Scrape the squash with a fork, Prepare pasta with garlic and seasonings", ['Vegan', "Healthy", "Dinner", "Vegetarian"]);
+    const recipe4 = await recipes.addRecipe("Brownies", "suzys_sweets", user5._id.toString(), ["Cocoa Powder", "Flour", "Eggs", "Milk", "Sugar"], "Combine dry ingredients, Mix wet ingredients separately, Combine all ingredients in a baking pan, Cook at 350F for 30 minutes", ["Dessert", "Chocolate"]);
+    const recipe5 = await recipes.addRecipe("Cream Puffs", 'graces_goods', user4._id.toString(), ["Puff Pastries", "Whipping Cream", "Sugar", "Powdered Sugar"], "Separate and cook puff pastries at 375F for 10 minutes, Whisk together whipping cream and sugar until peaks form, Allow puff pastries to cool, then fill with cream, Finish with powdered sugar", ["Italian", "Dessert"]);
+    const recipe6 = await recipes.addRecipe("Session Cookies", "professor_of_food", user6._id.toString(), ["Express", "NPM", "Flour", "Sugar", "Chocolate Chips"], "npm install express, npm install express-session, Combine dry ingredients and Javascript in one bowl, Cook at 350F in a Node.js oven for 10 minutes, npm start", ["Chocolate", "Dessert"]);
     //COMMENTS
     const comment1 = await comments.createComment(recipe1._id, "firas_food", user2._id, "This was delicious! The whole family loved it");
     const comment2 = await comments.createComment(recipe2._id, "graces_goods", user4._id, "This made a tasty and healthy breakfast!");
     const comment3 = await comments.createComment(recipe2._id, "mike_makes_food", user3._id, "I hope you all enjoy!");
     const comment4 = await comments.createComment(recipe3._id, "suzys_sweets", user5._id, "My favorite vegetarian meal!")
     const comment5 = await comments.createComment(recipe5._id, "galaxy_eats", user7._id, "I'm taking these back to my home far, far away")
-    const comment6 = await comments.createComment(recipe5._id, "professor_of_food", user6._id, "My sessino cookies are better!")
+    const comment6 = await comments.createComment(recipe5._id, "professor_of_food", user6._id, "My session cookies are better!")
     const comment7 = await comments.createComment(recipe4._id, "firas_food", user2._id, "I loooove brownies!")
     const comment8 = await comments.createComment(recipe6._id, "lizs_lemons", user8._id, "This would go great with some lemons")
 

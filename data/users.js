@@ -339,11 +339,10 @@ const updateUser = async function updateUser(id, newUser){
             }
 
             const recipeCollection = await recipes()
-            rlist = await recipeCollection.find({'author': author}).toArray()
-
+            rlist = await recipeCollection.find({'author': user.username}).toArray()
             let i;
             for(i = 0; i< rlist.length; i++){
-                let obj = ObjectId(id);
+                let obj = ObjectId(rlist[i]._id);
                 await recipeCollection.updateOne({_id: obj}, {$set: {author : newUser.username}});
             }
             updatedUser.username = newUser.username;

@@ -3,7 +3,7 @@
 
     <form id="add_comment" action="/recipes/addComment/{{recipe_id}}" method="POST">
         <label for="comment">New comment for {{recipe_name}}:</label>
-        <textarea id="comment" name="comment" rows =5></textarea>
+        <textarea id="comment" name="comment" rows =5 class="form_input1"></textarea>
 
         <input type="text" id="id" name="id" value={{recipe_id}} hidden=True>
 

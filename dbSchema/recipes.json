@@ -2,6 +2,7 @@
     "_id": "507f191e810c19729de860ea",
     "title": "Fudgy Brownies",
     "author": "john_doe_foodie",
+    "author_id": "606219e9227bce189752a8bc",
     "likes": ["johns_mom1000", "suze_dawg", "mysteryman333"],
     "total_likes": 3,
     "ingredients": ["chocolate", "flour", "eggs"],
@@ -14,7 +15,6 @@
        "commenter": "john_doe_foodie",
        "comment": "This food is trash"
     }
-    ],
-    "pictures": ["brownies.png"]
+    ]
  }
  

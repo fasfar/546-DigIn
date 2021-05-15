@@ -229,6 +229,15 @@ const removeRecipe = async function removeRecipe(id, recipeId){
         }
     };
 
+const hasRecipeSaved = async function hasRecipeSaved(id, recipeId){
+    const user = await getUser(id);
+    let recipes = user.recipes_saved;
+    if(!recipes.includes(recipeId)){
+        return false;
+    }
+    else return true;
+}
+
 const addRecipe = async function addRecipe(id, recipeId){
         //adds to own recipes
         if(!id)
@@ -445,6 +454,7 @@ module.exports = {
     addFollower,
     follow,
     addRecipe,
+    hasRecipeSaved,
     addTag,
     deleteRecipe,
     removeFollower,

@@ -19,15 +19,25 @@ const makeArray = function makeArray(str){
 router.get('/id/:id', async (req, res) => {
   let user = req.session.user;
   let like_dislike = "Like";
+  let is_liked = false;
   if(req.session.user){
-    let is_liked = await likesData.checkIfLiked(xss(req.params.id), xss(user._id));
-    if(is_liked){
-      like_dislike = "Remove like";
+    try{
+      is_liked = await likesData.checkIfLiked(xss(req.params.id), xss(user._id));
+      if(is_liked){
+        like_dislike = "Remove like";
+      }
+    } catch (e) {
+      res.status(404).json({ error: e.toString()});
     }
-    let ownRecipe = await recipeData.ownRecipe(xss(req.params.id), xss(user._id));
+    let ownRecipe;
+    try{
+      ownRecipe = await recipeData.ownRecipe(xss(req.params.id), xss(user._id));
+    } catch (e) {
+      res.status(404).json({ error: e.toString()});
+    }
     try {
       const recipe = await recipeData.getRecipeById(xss(req.params.id));
-      let commentList = await commentData.ownComment(xss(req.params.id), user._id);
+      let commentList = await commentData.ownComment(xss(req.params.id), user._id.toString());
       if(await userData.hasRecipeSaved(req.session.user._id, xss(req.params.id)))
       return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList, savedRecipe: true});
       else return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList});
@@ -148,9 +158,13 @@ router.put('/:id', async (req, res) => {
 });
 
 router.get('/addComment/:id', async (req, res) => {
-  let commentInfo = xss(req.params);
-  let recipe_id = commentInfo.id;
-  let recipe = await recipeData.getRecipeById(recipe_id);
+  let recipe_id = xss(req.params.id);
+  let recipe = {};
+  try {
+    recipe = await recipeData.getRecipeById(recipe_id);
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
   if(req.session.user){
     try {
       res.render("recipes/addComment", {recipe_id: recipe_id, recipe_name: recipe.title});
@@ -167,7 +181,12 @@ router.get('/addComment/:id', async (req, res) => {
 router.post('/addComment/:id', async (req, res) => {
   let commentInfo = req.body;
   let recipe_id = xss(commentInfo.id);
-  let recipe = await recipeData.getRecipeById(recipe_id);
+  let recipe;
+  try {
+    recipe = await recipeData.getRecipeById(recipe_id.toString());
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
   let user = req.session.user;
 
  
@@ -188,7 +207,12 @@ router.post('/addComment/:id', async (req, res) => {
 
 router.get('/toggleLike/:id', async (req, res) => {
   let recipe_id = xss(req.params.id);
-  let recipe = await recipeData.getRecipeById(recipe_id);
+  let recipe;
+  try {
+    recipe = await recipeData.getRecipeById(recipe_id);
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
   let user = req.session.user;
   let user_name = user.username;
   let user_id = user._id;
@@ -218,7 +242,12 @@ router.get('/toggleLike/:id', async (req, res) => {
 
 router.get('/likesList/:id', async (req, res) => {
   let recipe_id = xss(req.params.id);
-  let recipe = await recipeData.getRecipeById(recipe_id);
+  let recipe;
+  try {
+    recipe = await recipeData.getRecipeById(recipe_id);
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
   let likes = recipe.likes;
 
   if(req.session.user){
@@ -237,7 +266,12 @@ router.get('/likesList/:id', async (req, res) => {
 router.get('/commentsList/:id', async (req, res) => {
   let recipe_id = xss(req.params.id);
   let user = req.session.user;
-  let comments = await commentData.ownComment(recipe_id, user._id)
+  let comments;
+  try {
+    comments = await commentData.ownComment(recipe_id, user._id.toString());
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
 
   if(req.session.user){
     try {
@@ -254,7 +288,12 @@ router.get('/commentsList/:id', async (req, res) => {
 
 router.get('/deleteComment/:commentId', async (req, res) => {
   let comment_id = xss(req.params.commentId);
-  let comment = await commentData.getById(comment_id);
+  let comment;
+  try {
+    comment = await commentData.getById(comment_id);
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
   let recipe_id = comment.recipeId;
 
   if(req.session.user){
@@ -326,10 +365,7 @@ router.patch('/edit/:id', async (req, res) => {
       res.status(500).json({ error: e.toString() });
     }
   } else {
-    res.status(400).json({
-      error:
-        'No fields have been changed from their inital values, so no update has occurred'
-    });
+    res.render("recipes/editRecipe", {id: xss(req.params.id), error: 'No fields have been changed from their inital values, so no update has occurred'});
   }
 });
 

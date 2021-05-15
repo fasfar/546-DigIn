@@ -1,42 +1,51 @@
 (function($){
     let commentForm = $('#addcomment');
-    let commentInput = $(".form_input1");
 
     let addRecipeForm = $('#new_recipe');
-    let addRecipeInput = $('.form_input2');
 
-    let createUserForm = $('#create_user');
+    let createUserForm = $('#registration_form');
     let createUserInput = $('.form_input4');
 
     let loginForm = $('#login_form');
     let loginInput = $('.form_input6');
 
     commentForm.submit(function (event) {
-        if(!commentInput.val() || commentInput.val().trim().length == 0){
-            event.preventDefault();
-            alert("Inputs must be non-empty")
-        }
+        $("#addcomment .form_input1").each(function() {
+            if(!$(this).val() || $(this).val().trim().length == 0){
+                event.preventDefault()
+                alert("Inputs must be non-empty");
+                return false;
+            }
+        });
     });
 
     addRecipeForm.submit(function (event) {
-        if(!addRecipeInput.val() || addRecipeInput.val().trim().length == 0){
-            event.preventDefault();
-            alert("Inputs must be non-empty")
-        }
+        $("#new_recipe .form_input2").each(function() {
+            if(!$(this).val() || $(this).val().trim().length == 0){
+                event.preventDefault()
+                alert("Inputs must be non-empty");
+                return false;
+            }
+        });
     });
 
     createUserForm.submit(function (event) {
-        if(!createUserInput.val() || createUserInput.val().trim().length == 0){
-            event.preventDefault();
-            alert("Inputs must be non-empty")
-        }
+        $("#registration_form .form_input4").each(function() {
+            if(!$(this).val() || $(this).val().trim().length == 0){
+                event.preventDefault()
+                alert("Inputs must be non-empty");
+                return false;
+            }
+        });
     });
 
     loginForm.submit(function (event) {
-        if(!loginInput.val() || loginInput.val().trim().length == 0){
-            event.preventDefault();
-            alert("Inputs must be non-empty")
-        }
+        $("#login_form .form_input6").each(function() {
+            if(!$(this).val() || $(this).val().trim().length == 0){
+                event.preventDefault()
+                alert("Inputs must be non-empty");
+            }
+        });
     });
 
 

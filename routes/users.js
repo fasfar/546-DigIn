@@ -86,7 +86,8 @@ router.post('/createUser', async (req, res) => {
         return res.redirect('/private');
     }
     catch (e){
-        console.log(e.toString());
+        req.session.error = e.toString();
+        res.render('users/createUser', {error: req.session.error});
     }
 });
 

@@ -5,14 +5,8 @@
     let addRecipeForm = $('#new_recipe');
     let addRecipeInput = $('.form_input2');
 
-    let editRecipeForm = $('#edit_recipe');
-    let editRecipeInput = $('.form_input3');
-
     let createUserForm = $('#create_user');
     let createUserInput = $('.form_input4');
-
-    let editUserForm = $('#edit_user_form');
-    let editUserInput = $('form_input5');
 
     let loginForm = $('#login_form');
     let loginInput = $('.form_input6');

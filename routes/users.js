@@ -26,10 +26,6 @@ router.post('/login', async (req, res) => {
     }
     try{
         let thisUser = await userData.getUserByUsername(username);
-        if(!thisUser){
-            req.session.error = "401: Invalid Login Credentials"; 
-            return res.redirect('/');
-        }
         let match = await bcrypt.compare(password, thisUser['password']);
         if(match){
             req.session.user = thisUser;
@@ -48,7 +44,8 @@ router.post('/login', async (req, res) => {
 
 router.get('/private', async (req, res) => {
     if(req.session.user) {
-        let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username)
+        console.log(req.session.user);
+        let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username);
         req.session.user = await userData.getUser(req.session.user._id);
         return res.render("users/userProfile", {user: req.session.user, recipes: userRecipes});
     }
@@ -96,12 +93,10 @@ router.get('/otherUser/:id', async(req, res) => {
                 return res.redirect('/private');
             }else{
                 if(await userData.isFollowing(req.session.user._id,req.params.id)){
-                    let userRecipes = await recipeData.getRecipeByAuthor(otherUser.username);
-                    res.render('users/otherUser', {user: otherUser, isFollowing: true, recipes:userRecipes});
+                    res.render('users/otherUser', {user: otherUser, isFollowing: true});
                 }
                 else{
-                    let userRecipes = await recipeData.getRecipeByAuthor(otherUser.username);
-                    res.render('users/otherUser', {user: otherUser, recipes:userRecipes})
+                    res.render('users/otherUser', {user: otherUser})
                 }
             }
         }
@@ -128,7 +123,6 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 await userData.follow(req.session.user._id,req.params.id); //session user follows route user
                 await userData.addFollower(req.params.id,req.session.user._id); //route user followed by session user
-
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
@@ -139,36 +133,12 @@ router.patch('/follow/:id', async (req, res) => {
             try{
                 await userData.unFollow(req.session.user._id,req.params.id); //session user unfollows route user
                 await userData.removeFollower(req.params.id,req.session.user._id); //route user unfollowed by session user
-
                 res.redirect('/otherUser/' + req.params.id)
             }
             catch (e){
                 console.log(e.toString());
             }
         }
-    }
-    else{
-        req.session.error = "401: Unauthorized User"
-        res.redirect('/');
-    }
-});
-
-router.get('/followers', async (req, res) => {
-    if(req.session.user){
-        let userFollowers = await userData.getFollowers(req.session.user._id);
-
-        res.render('users/followers', {followers: userFollowers});
-    }
-    else{
-        req.session.error = "401: Unauthorized User"
-        res.redirect('/');
-    }
-});
-
-router.get('/following', async (req, res) => {
-    if(req.session.user){
-        let usersFollowing = await userData.getUsersFollowing(req.session.user._id);
-        res.render('users/following', {following: usersFollowing});
     }
     else{
         req.session.error = "401: Unauthorized User"
@@ -180,32 +150,6 @@ router.patch('/unfollow/:id', async (req, res) => {
     //the :id request parameter corresponds to the unfollowed's id. 
     //The unfollowing user's id obtained from session cookie
     if(req.session.user){
-        let followers = await userData.getUsersFollowing(req.session.user._id);
-        res.render('users/followers', {followers: followers});
-    }
-    else{
-        req.session.error = "401: Unauthorized User"
-        res.redirect('/');
-    }
-});
-
-router.patch('/saveRecipe/:id', async (req, res) => {
-    //the :id request parameter corresponds to the recipe's id. 
-    //User's id obtained from session cookie
-    if(req.session.user){
-        userData.saveRecipe(req.session.user._id, req.params.id)
-    }
-    else{
-        req.session.error = "401: Unauthorized User"
-        res.redirect('/');
-    }
-});
-
-router.patch('/removeRecipe/:id', async (req, res) => {
-    //the :id request parameter corresponds to the recipe's id. 
-    //User's id obtained from session cookie
-    if(req.session.user){
-        userData.saveRecipe(req.session.user._id, req.params.id)
     }
     else{
         req.session.error = "401: Unauthorized User"
@@ -223,7 +167,32 @@ router.get('/editUser', async(req, res) => {
     }
 })
 
-
+router.patch('/saveRecipe/:id', async (req, res) => {
+    if(req.session.user){
+        if(!await userData.hasRecipeSaved(req.session.user._id,req.params.id)){
+            try{
+                await userData.saveRecipe(req.session.user._id,req.params.id); //session user follows route user
+                return res.redirect('/recipes/id/' + req.params.id)
+            }
+            catch (e){
+                console.log(e.toString());
+            }
+        }
+        else{
+            try{
+                await userData.removeRecipe(req.session.user._id,req.params.id); //session user follows route user
+                return res.redirect('/recipes/id/' + req.params.id)
+            }
+            catch (e){
+                console.log(e.toString());
+            }
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User"
+        res.redirect('/');
+    }
+})
 
 router.patch('/editUser', async (req, res) => {
     if(req.session.user){
@@ -282,29 +251,11 @@ router.get('/tags', async (req, res) =>{
 router.post('/tags/:tag', async (req, res) =>{
     if(req.session.user){
         try{
+            console.log(req.params.tag);
             let user = req.session.user;
             let tag = req.params.tag;
             let FollowedTag = await userData.addTag(user._id, tag)
             res.send(tag);
-
-        }
-        catch (e){
-            console.log(e.toString());
-        }
-    }
-    else{
-        req.session.error = "401: Unauthorized User; cannot update User info"
-        res.redirect('/');
-    }
-});
-
-router.post('/utags/:tag', async (req, res) =>{
-    if(req.session.user){
-        try{
-            let user = req.session.user;
-            let tag = req.params.tag;
-            let deletedTag = await userData.removeTag(user._id, tag)
-            res.redirect('/tags');
 
         }
         catch (e){

@@ -62,6 +62,18 @@
      <button class="btn btn-outline-primary"> <a href="/recipes/toggleLike/{{recipe._id}}">{{like_dislike}}</a></button>
     <button class="btn btn-outline-primary"><a href="/recipes/addComment/{{recipe._id}}">Add comment</a></button>
 
+    {{#if savedRecipe}}
+        <form action="/saveRecipe/{{recipe._id}}" id="save_recipe_form" method="POST">
+            <button type="submit" id="save_button" hidden>Save Recipe</button>
+            <button type="submit" id="unsave_button" >Unsave Recipe</button>
+        </form>
+    {{else}}
+       <form action="/saveRecipe/{{recipe._id}}" id="save_recipe_form" method="POST">
+            <button type="submit" id="save_button" >Save Recipe</button>
+            <button type="submit" id="unsave_button" hidden>Unsave Recipe</button>
+        </form>
+    {{/if}}
+
     {{#if own_recipe}}
         <button class="btn btn-outline-primary"><a href="/recipes/delete/{{recipe._id}}">Delete recipe</a></button>
        <button class="btn btn-outline-primary"> <a href="/recipes/edit/{{recipe._id}}">Edit recipe</a></button>

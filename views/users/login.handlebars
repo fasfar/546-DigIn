@@ -1,6 +1,9 @@
 <div>
     <h1>Dig-In</h1>
     <h3> Make cooking an experience, not a chore.</h3>
+    {{#if error}}
+        <p>{{error}}</p>
+    {{/if}}
     <form id="login_form" action="/login" method="POST">
         <label for="username"> Username
             <input type="text" id="username" name="username">

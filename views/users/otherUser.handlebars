@@ -13,4 +13,40 @@
             <button type="submit" id="unfollow_button" hidden>Unfollow</button>
         </form>
     {{/if}}
+    <h2>Posts</h2>
+    <ul>
+        {{#each recipes}} 
+            <li class="list-group-item list-group-item-action list-group-item-primary">
+                <h2><a href="/recipes/id/{{this._id}}">{{this.title}}</a></h2>
+                <dl>
+                    <dt>
+                        Tags
+                    </dt>
+                    <dd>
+                        <ul>
+                            {{#each this.tags}}
+                                <li>{{this}}</li>
+                            {{/each}}
+                        </ul>
+                    </dd>
+                    <dt>
+                        Ingredients
+                    </dt>
+                    <dd>
+                        <ul>
+                            {{#each this.ingredients}}
+                                <li>{{this}}</li>
+                            {{/each}}
+                        </ul>
+                    </dd>
+                    <dt>
+                        Instructions
+                    </dt>
+                    <dd>
+                    {{ this.instructions}}
+                    </dd>
+                </dl>
+            </li> 
+        {{/each}}
+    </ul>
 </div>

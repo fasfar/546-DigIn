@@ -26,6 +26,10 @@ router.post('/login', async (req, res) => {
     }
     try{
         let thisUser = await userData.getUserByUsername(username);
+        if(!thisUser){
+            req.session.error = "401: Invalid Login Credentials"; 
+            return res.redirect('/');
+        }
         let match = await bcrypt.compare(password, thisUser['password']);
         if(match){
             req.session.user = thisUser;
@@ -92,10 +96,12 @@ router.get('/otherUser/:id', async(req, res) => {
                 return res.redirect('/private');
             }else{
                 if(await userData.isFollowing(req.session.user._id,req.params.id)){
-                    res.render('users/otherUser', {user: otherUser, isFollowing: true});
+                    let userRecipes = await recipeData.getRecipeByAuthor(otherUser.username);
+                    res.render('users/otherUser', {user: otherUser, isFollowing: true, recipes:userRecipes});
                 }
                 else{
-                    res.render('users/otherUser', {user: otherUser})
+                    let userRecipes = await recipeData.getRecipeByAuthor(otherUser.username);
+                    res.render('users/otherUser', {user: otherUser, recipes:userRecipes})
                 }
             }
         }

@@ -321,7 +321,7 @@ const getFeed = async function getFeed(id){
 }
 
 const updateUser = async function updateUser(id, newUser){
-        if(!id || !(id instanceof ObjectId))
+        if(!id)
             if(!(typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/))) //if id is not ObjectId, confirm it is string of ObjectId format
                 throw 'You need to input a valid id';
         let user = await getUser(id);

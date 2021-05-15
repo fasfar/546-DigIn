@@ -18,7 +18,6 @@ const makeArray = function makeArray(str){
 router.get('/id/:id', async (req, res) => {
   let user = req.session.user;
   let like_dislike = "Like";
-  
   if(req.session.user){
     let is_liked = await likesData.checkIfLiked(req.params.id, user._id);
     if(is_liked){
@@ -32,7 +31,7 @@ router.get('/id/:id', async (req, res) => {
       return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList, savedRecipe: true});
       else return res.render("recipes/recipe", {recipe: recipe, like_dislike: like_dislike, own_recipe: ownRecipe, comments: commentList});
     } catch (e) {
-      res.status(404).json({ error: 'Recipe not found' });
+      res.status(404).json({ error: e.toString()});
     }
   }
   else{

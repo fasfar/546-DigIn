@@ -235,8 +235,8 @@ router.get('/likesList/:id', async (req, res) => {
 
 router.get('/commentsList/:id', async (req, res) => {
   let recipe_id = req.params.id;
-  let recipe = await recipeData.getRecipeById(recipe_id);
-  let comments = recipe.comments;
+  let user = req.session.user;
+  let comments = await commentData.ownComment(recipe_id, user._id)
 
   if(req.session.user){
     try {

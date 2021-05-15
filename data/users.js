@@ -313,6 +313,7 @@ const getFeed = async function getFeed(id){
                 recipesBy.push(recipe);
             }
         });
+        recipesBy.reverse();
         return recipesBy;
 
     }catch(e){

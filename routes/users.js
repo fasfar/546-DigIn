@@ -49,6 +49,7 @@ router.post('/login', async (req, res) => {
 router.get('/private', async (req, res) => {
     if(req.session.user) {
         let userRecipes = await recipeData.getRecipeByAuthor(req.session.user.username)
+        userRecipes.reverse();
         req.session.user = await userData.getUser(req.session.user._id);
         return res.render("users/userProfile", {user: req.session.user, recipes: userRecipes});
     }
@@ -97,10 +98,12 @@ router.get('/otherUser/:id', async(req, res) => {
             }else{
                 if(await userData.isFollowing(req.session.user._id,req.params.id)){
                     let userRecipes = await recipeData.getRecipeByAuthor(otherUser.username);
+                    userRecipes.reverse()
                     res.render('users/otherUser', {user: otherUser, isFollowing: true, recipes:userRecipes});
                 }
                 else{
                     let userRecipes = await recipeData.getRecipeByAuthor(otherUser.username);
+                    userRecipes.reverse();
                     res.render('users/otherUser', {user: otherUser, recipes:userRecipes})
                 }
             }
@@ -323,6 +326,31 @@ router.post('/utags/:tag', async (req, res) =>{
         res.redirect('/');
     }
 });
+
+router.get('/savedRecipes', async (req, res) =>{
+    if(req.session.user){
+        try{
+            let user = await userData.getUser(req.session.user._id);
+            let recipes = user.recipes_saved;
+            let recipeList =[]
+            for(let recipe of recipes){
+                let obj = await recipeData.getRecipeById(recipe);
+                recipeList.push(obj);
+            }
+            recipeList.reverse();
+            res.render('users/savedRecipes', {recipes: recipeList});
+
+        }
+        catch (e){
+            console.log(e.toString());
+        }
+    }
+    else{
+        req.session.error = "401: Unauthorized User; cannot get saved recipes";
+        res.redirect('/');
+    }
+});
+
 
 module.exports = router;
 

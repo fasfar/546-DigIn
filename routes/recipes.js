@@ -10,7 +10,9 @@ const userData = data.users;
 const likesData = data.likes;
 
 const makeArray = function makeArray(str){
-  return str.split(',');
+  let arr = str.split(',');
+  let newArr = arr.map(value => value.trim());
+  return newArr;
 }
 
 router.get('/id/:id', async (req, res) => {
@@ -110,8 +112,7 @@ router.post('/', async (req, res) => {
       const {title, ingredients, tags, instructions} = recipe;
       let author = req.session.user.username;
       let author_id = req.session.user._id;
-      let noSpaceTags = tags.replace(/\s+/g, '');
-      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(noSpaceTags));
+      const newRecipe = await recipeData.addRecipe(title, author, author_id, makeArray(ingredients), instructions, makeArray(tags));
       res.render("recipes/recipeAddedSuccessfully");
     } catch (e) {
       res.status(400).json({ error: e.toString() });
@@ -284,14 +285,15 @@ router.patch('/edit/:id', async (req, res) => {
     }
     if (requestBody.ingredients && requestBody.ingredients !== oldRecipe.ingredients){
       try{
-        updatedObject.ingredients = requestBody.ingredients;
+        updatedObject.ingredients = makeArray(requestBody.ingredients);
       } catch(e){
         res.status(400).json({ error: 'Issue with ingredients field. Try again.' });
       }
     }
     if (requestBody.tags && requestBody.tags !== oldRecipe.tags){
       try{
-        updatedObject.tags = requestBody.tags;
+        updatedObject.tags = makeArray(requestBody.tags);
+        console.log(updatedObject.tags)
       } catch(e){
         res.status(400).json({ error: 'Issue with tags field. Try again.' });
       }
@@ -313,9 +315,10 @@ router.patch('/edit/:id', async (req, res) => {
         req.params.id,
         updatedObject.title,
         updatedObject.ingredients,
+        updatedObject.tags,
         updatedObject.instructions
       );
-      res.render("recipes/recipe", {recipe: updatedRecipe});
+      res.redirect("/recipes/id/" + req.params.id);
       
     } catch (e) {
       res.status(500).json({ error: e.toString() });

@@ -105,13 +105,14 @@ async function getById(id){
     let totalRecipes = await allRecipes.getAllRecipes()
 
     //search every comment in every recipe to find the requested comment
-    for(let i=0; i<totalRecipes.length; i++){
+    let i;
+    for(i=0; i<totalRecipes.length; i++){
 
         let currId = totalRecipes[i]
-        currIdStr = currId._id.toString()
+        let currIdStr = currId._id.toString()
         let commentList = await this.getAll(currIdStr)
-
-        for(let j=0; j< commentList.length; j++){
+        let j;
+        for(j=0; j< commentList.length; j++){
             if(commentList[j]._id.toString() == id){
                 return commentList[j];
             }
@@ -134,11 +135,12 @@ async function remove(id){
     let foundRecipeId = ""
 
     //search every comment in every recipe to find the requested comment
-    for(let i=0; i<totalRecipes.length; i++){
+    let i;
+    for(i=0; i<totalRecipes.length; i++){
         console.log("hey");
 
         let currId = totalRecipes[i]
-        currIdStr = currId._id.toString()
+        let currIdStr = currId._id.toString()
         let commentList = await this.getAll(currIdStr)
         console.log(commentList) 
 
@@ -153,9 +155,10 @@ async function remove(id){
                 break
             }
         }
-        if(found === true)
-        console.log("successfully deleted")
-        break
+        if(found === true){
+            console.log("successfully deleted")
+            break
+        }
     }
     if(found === false){
         throw 'Comment not found'

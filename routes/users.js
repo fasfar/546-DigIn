@@ -79,9 +79,9 @@ router.get('/createUser', async (req, res) => {
 });
 
 router.post('/createUser', async (req, res) => {
-    let newUser = xss(req.body);
+    let newUser = req.body;
     try{
-        let thisUser = await userData.addUser(newUser.name, newUser.username, newUser.password, newUser.email, newUser.profile_picture);
+        let thisUser = await userData.addUser(xss(newUser.name), xss(newUser.username), xss(newUser.password), xss(newUser.email), xss(newUser.profile_picture));
         req.session.user = thisUser;
         return res.redirect('/private');
     }
@@ -238,7 +238,11 @@ router.get('/editUser', async(req, res) => {
 
 router.patch('/editUser', async (req, res) => {
     if(req.session.user){
-        let newUser = xss(req.body);
+        let newUser = req.body;
+        let keys = Object.keys(newUser);
+        for(key of keys){
+            newUser[key] = xss(newUser[key]);
+        }
         try{
             let updatedUser = await userData.updateUser(req.session.user._id, newUser);
             req.session.user = updatedUser;

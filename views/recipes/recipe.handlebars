@@ -64,13 +64,13 @@
 
     {{#if savedRecipe}}
         <form action="/saveRecipe/{{recipe._id}}" id="save_recipe_form" method="POST">
-            <button type="submit" id="save_button" hidden>Save Recipe</button>
-            <button type="submit" id="unsave_button" >Unsave Recipe</button>
+            <button type="submit" id="save_button" class="btn btn-outline-primary" hidden>Save Recipe</button>
+            <button type="submit" id="unsave_button" class="btn btn-outline-primary">Unsave Recipe</button>
         </form>
     {{else}}
        <form action="/saveRecipe/{{recipe._id}}" id="save_recipe_form" method="POST">
-            <button type="submit" id="save_button" >Save Recipe</button>
-            <button type="submit" id="unsave_button" hidden>Unsave Recipe</button>
+            <button type="submit" id="save_button" class="btn btn-outline-primary">Save Recipe</button>
+            <button type="submit" id="unsave_button" class="btn btn-outline-primary" hidden>Unsave Recipe</button>
         </form>
     {{/if}}
 

@@ -25,8 +25,8 @@ async function ownComment(recipe_id, user_id){
     let recipe = await allRecipes.getRecipeById(recipe_id);
     let comments = recipe.comments;
     let newCommentList = [];
-
-    for(let i = 0; i < comments.length; i++){
+    let i;
+    for(i = 0; i < comments.length; i++){
         let newComment = {
             _id: comments[i]._id,
             user: comments[i].user, 
